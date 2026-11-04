@@ -1,0 +1,69 @@
+# Genera il cruscotto e lo salva nel repository privato .github-private:
+#   README.md e profile/README.md   il cruscotto (solo membri)
+#   tabelle/*.tex                   tabelle per il Piano di Progetto
+#   diario/sprint-N.md              numeri per il diario di bordo
+#   dati/ore.csv                    tutte le ore registrate
+# Parte ogni notte, quando cambia gestione/ e a mano (Actions -> Cruscotto
+# -> Run workflow). Il codice è in gestione/cruscotto.py.
+name: Cruscotto
+
+on:
+  schedule:
+    - cron: "23 2 * * *"          # ogni notte, 3:23 ora italiana (4:23 d'estate)
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["gestione/**"]
+
+concurrency:
+  group: cruscotto
+  cancel-in-progress: false
+
+jobs:
+  cruscotto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Token della GitHub App
+        id: token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GESTIONE_APP_ID }}
+          private-key: ${{ secrets.GESTIONE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Scarica questo repository
+        uses: actions/checkout@v4
+
+      - name: Scarica il repository privato
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github-private
+          token: ${{ steps.token.outputs.token }}
+          path: privato
+
+      - name: Genera il cruscotto
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: python3 gestione/cruscotto.py --uscita privato
+
+      - name: Salva nel repository privato
+        working-directory: privato
+        run: |
+          git config user.name "cruscotto[bot]"
+          git config user.email "cruscotto@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Niente di nuovo."
+          else
+            git commit -q -m "Aggiorna il cruscotto"
+            git push -q
+            echo "Cruscotto aggiornato."
+          fi
+
+      - name: Tabelle LaTeX scaricabili
+        uses: actions/upload-artifact@v4
+        with:
+          name: tabelle-piano-di-progetto
+          path: privato/tabelle/
+          retention-days: 30

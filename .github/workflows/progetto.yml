@@ -1,0 +1,34 @@
+# Workflow RIUTILIZZABILE: lo richiamano gli altri repository con il loro
+# .github/workflows/progetto.yml. Collega issue e PR al GitHub Project:
+#   - issue aperta: entra nel Project con Ruolo, Ore stimate e Sprint;
+#   - PR aperta: le issue che chiude passano in "In review".
+# Il codice è in gestione/progetto.py.
+name: Project
+
+on:
+  workflow_call:
+
+jobs:
+  project:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Token della GitHub App
+        id: token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GESTIONE_APP_ID }}
+          private-key: ${{ secrets.GESTIONE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Scarica gli script di gestione
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          path: .gestione
+          persist-credentials: false
+
+      - name: Aggiorna il Project
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: python3 .gestione/gestione/progetto.py

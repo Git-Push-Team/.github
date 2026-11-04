@@ -1,0 +1,39 @@
+# Una issue per ogni riunione: ogni partecipante ci segna le sue ore con
+# /ore, e la issue si chiude quando il verbale è approvato.
+name: Riunione
+description: Una riunione interna o con il proponente (per segnare le ore e collegare il verbale).
+title: "Riunione AAAA-MM-GG"
+labels: ["riunione"]
+projects: ["Git-Push-Team/1"]
+body:
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Interna
+        - Esterna (con il proponente o il committente)
+    validations:
+      required: true
+  - type: input
+    id: data
+    attributes:
+      label: Data e ora
+      placeholder: "AAAA-MM-GG HH:MM"
+    validations:
+      required: true
+  - type: textarea
+    id: ordine
+    attributes:
+      label: Ordine del giorno
+      placeholder: "1. ...\n2. ..."
+  - type: input
+    id: verbale
+    attributes:
+      label: Issue del verbale
+      description: La issue con cui si scrive il verbale, se è diversa da questa.
+      placeholder: "es. docs#85"
+  - type: markdown
+    attributes:
+      value: |
+        **Dopo la riunione** ogni partecipante scrive qui un commento con la durata, per esempio `/ore 1,5`. Le ore vanno nel ruolo che ognuno ha nello sprint.

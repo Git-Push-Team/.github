@@ -1,0 +1,25 @@
+# Prove automatiche degli script di gestione e controllo di
+# pianificazione.toml, a ogni pull request che li tocca.
+name: Prove
+
+on:
+  pull_request:
+    paths: ["gestione/**", ".github/workflows/**"]
+  push:
+    branches: [main]
+    paths: ["gestione/**"]
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Controlla pianificazione.toml
+        run: |
+          cd gestione
+          python3 -c "from comune import carica_configurazione as c; k = c(); print(f'pianificazione.toml: {len(k.membri)} membri, {len(k.sprint)} sprint')"
+
+      - name: Prove automatiche
+        run: python3 -m unittest discover -s gestione/test -v

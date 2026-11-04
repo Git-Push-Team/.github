@@ -1,0 +1,6 @@
+{
+  "name": "Collegamento al Project",
+  "description": "Aggiunge issue al Project del gruppo con ruolo, stima e sprint; sposta in revisione le issue chiuse da una PR aperta.",
+  "iconName": "octicon project",
+  "categories": ["Automation"]
+}

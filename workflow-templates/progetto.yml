@@ -1,0 +1,18 @@
+# Collega issue e PR al GitHub Project "GIT PUSH TEAM":
+#   - issue aperta: entra nel Project con Ruolo, Ore stimate e Sprint;
+#   - PR aperta: le issue che chiude ("Closes #12") passano in "In review".
+# Il lavoro vero lo fa il workflow comune in Git-Push-Team/.github.
+name: Project
+
+on:
+  issues:
+    types: [opened, reopened, transferred]
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  project:
+    # le PR da fork non hanno accesso ai segreti: si saltano
+    if: github.event_name == 'issues' || github.event.pull_request.head.repo.full_name == github.repository
+    uses: Git-Push-Team/.github/.github/workflows/progetto.yml@main
+    secrets: inherit

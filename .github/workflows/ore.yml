@@ -1,0 +1,37 @@
+# Workflow RIUTILIZZABILE: lo richiamano gli altri repository (docs, poc,
+# mvp...) con il loro .github/workflows/ore.yml, a ogni commento con /ore.
+# Ricalcola le ore della issue, aggiorna "Ore effettive" nel Project e il
+# commento di riepilogo. Il codice è in gestione/ore.py.
+name: Ore
+
+on:
+  workflow_call:
+
+jobs:
+  ore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # due commenti ravvicinati sulla stessa issue: uno alla volta
+    concurrency:
+      group: ore-${{ github.repository }}-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    steps:
+      - name: Token della GitHub App
+        id: token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GESTIONE_APP_ID }}
+          private-key: ${{ secrets.GESTIONE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Scarica gli script di gestione
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          path: .gestione
+          persist-credentials: false
+
+      - name: Aggiorna le ore
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: python3 .gestione/gestione/ore.py

@@ -1,0 +1,40 @@
+name: Bug
+description: Un comportamento sbagliato del software.
+title: "[BUG] "
+labels: ["bug"]
+projects: ["Git-Push-Team/1"]
+body:
+  - type: textarea
+    id: cosa
+    attributes:
+      label: Cosa succede
+      description: Cosa avete fatto, cosa vi aspettavate e cosa è successo invece.
+    validations:
+      required: true
+  - type: textarea
+    id: riprodurre
+    attributes:
+      label: Come riprodurlo
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: input
+    id: versione
+    attributes:
+      label: Versione, branch o commit
+      placeholder: "es. main, abc1234"
+  - type: dropdown
+    id: ruolo
+    attributes:
+      label: Ruolo
+      description: Chi se ne occupa, di solito un Programmatore.
+      options:
+        - Programmatore
+        - Progettista
+        - Amministratore
+        - Verificatore
+  - type: input
+    id: stima
+    attributes:
+      label: Stima in ore
+      placeholder: "es. 1"

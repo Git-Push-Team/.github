@@ -1,0 +1,104 @@
+# =====================================================================
+#  PIANIFICAZIONE DEL GRUPPO
+#
+#  È l'unico file che si compila a mano. Da qui partono:
+#    - il comando /ore (chi è chi, ruolo predefinito di ognuno);
+#    - il cruscotto (preventivo, sprint, obiettivi);
+#    - le tabelle LaTeX per il Piano di Progetto.
+#
+#  Si modifica con una pull request, come i documenti. Lo aggiorna di
+#  solito il Responsabile, nella riunione che apre lo sprint.
+#  Formato: TOML (https://toml.io/it/). Le date sono AAAA-MM-GG, senza
+#  virgolette. Le righe che iniziano con # sono commenti.
+# =====================================================================
+
+[organizzazione]
+nome = "Git-Push-Team"          # l'organizzazione GitHub
+project = 1                     # numero del GitHub Project "GIT PUSH TEAM" (si legge nell'indirizzo .../projects/1)
+fuso_orario = "Europe/Rome"
+repo_privato = ".github-private" # dove il bot scrive il cruscotto e le tabelle
+
+# Nomi dei campi del Project, esattamente come si leggono nel Project
+[campi]
+ore_effettive = "Ore effettive"  # numero: lo scrive il bot sommando i /ore
+ore_stimate = "Ore stimate"      # numero: dal modulo della issue
+ruolo = "Ruolo"                  # selezione singola
+sprint = "Sprint"                # iterazione (2 settimane)
+stato = "Status"                 # selezione singola: le colonne della bacheca
+stato_in_revisione = "In review" # colonna in cui va la issue quando si apre la PR che la chiude
+assegna_sprint_corrente = true   # una issue nuova entra nello sprint in corso
+aggiungi_pr_al_project = false   # true: anche le PR compaiono nella bacheca
+
+# ---------------------------------------------------------------------
+#  Membri: chiave (come in docs/template/dati-gruppo.tex) = username GitHub
+# ---------------------------------------------------------------------
+[membri]
+biasini    = { nome = "Enrico Biasini",      github = "enricobiasini" }
+cescobolla = { nome = "Luca Cesco Bolla",    github = "itsluca57" }
+corro      = { nome = "Alessio Corrò",       github = "alec0r" }
+guglielmo  = { nome = "Francesco Guglielmo", github = "firestone109" }
+mazzurana  = { nome = "Francesco Mazzurana", github = "MaZzU05" }
+spagnoli   = { nome = "Gaetano Spagnoli",    github = "gaexxx" }
+
+# ---------------------------------------------------------------------
+#  Ruoli e costo orario in euro (Dichiarazione di Impegni v1.0.0)
+# ---------------------------------------------------------------------
+[ruoli]
+Responsabile   = 30
+Amministratore = 20
+Analista       = 25
+Progettista    = 25
+Programmatore  = 15
+Verificatore   = 15
+
+# ---------------------------------------------------------------------
+#  Preventivo: ore di ogni persona per ruolo (Dichiarazione di Impegni)
+#  "tutti" vale per chi non ha una riga sua. Se il preventivo cambia,
+#  aggiornatelo qui E nella Dichiarazione/Piano di Progetto.
+# ---------------------------------------------------------------------
+[preventivo]
+fine_progetto = 2027-03-23
+tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17, Programmatore = 22, Verificatore = 19 }
+# esempio di eccezione:
+# biasini = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17, Programmatore = 22, Verificatore = 19 }
+
+# Scadenze da mostrare nel cruscotto (conto alla rovescia). Aggiungete
+# l'RTB e la PB appena le fissate, per esempio: RTB = 2027-01-18
+[scadenze]
+"Fine progetto" = 2027-03-23
+
+# ---------------------------------------------------------------------
+#  SPRINT: uno per blocco [[sprint]], in ordine. Per ognuno:
+#    numero, inizio, fine            (2 settimane, da lunedì a domenica)
+#    obiettivi = [ { testo = "...", issue = ["docs#12", "poc#3"] }, ... ]
+#        le issue sono facoltative: se ci sono, l'obiettivo è raggiunto
+#        quando sono tutte chiuse
+#    [sprint.ruoli]  chiave = { Ruolo = ore pianificate, ... }
+#        di solito un ruolo per persona; se qualcuno ne fa due, scrivetene
+#        due. Il ruolo con più ore è quello predefinito per /ore.
+# ---------------------------------------------------------------------
+[[sprint]]
+numero = 1
+inizio = 2026-11-02
+fine = 2026-11-15
+obiettivi = [
+  # { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#70"] },
+  # { testo = "Primo incontro di analisi con Eggon" },
+]
+
+[sprint.ruoli]
+# COMPILATE: ruolo e ore pianificate di ognuno in questo sprint, per esempio
+# biasini    = { Analista = 10 }
+# cescobolla = { Verificatore = 10 }
+# corro      = { Analista = 10 }
+# guglielmo  = { Amministratore = 10 }
+# mazzurana  = { Progettista = 10 }
+# spagnoli   = { Responsabile = 8, Verificatore = 2 }
+
+[[sprint]]
+numero = 2
+inizio = 2026-11-16
+fine = 2026-11-29
+obiettivi = []
+
+[sprint.ruoli]

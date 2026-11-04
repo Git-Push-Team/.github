@@ -1,0 +1,6 @@
+{
+  "name": "Ore (comando /ore)",
+  "description": "Registra le ore scritte nei commenti con /ore e le somma nel GitHub Project del gruppo.",
+  "iconName": "octicon clock",
+  "categories": ["Automation"]
+}

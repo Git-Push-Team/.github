@@ -1,0 +1,49 @@
+# Modello PREDEFINITO per tutti i repository dell'organizzazione che non
+# hanno modelli propri (poc, mvp...). Il repository docs ha i suoi.
+name: Attività
+description: Un compito da svolgere (codice, prova tecnologica, configurazione...).
+labels: ["attività"]
+projects: ["Git-Push-Team/1"]   # entra nella bacheca GIT PUSH TEAM
+body:
+  - type: textarea
+    id: descrizione
+    attributes:
+      label: Cosa va fatto
+      description: Il risultato atteso, in modo che chiunque capisca quando è finito.
+    validations:
+      required: true
+  - type: textarea
+    id: completamento
+    attributes:
+      label: Quando è finita
+      description: I criteri per considerarla conclusa (test che passano, documento aggiornato...).
+      placeholder: "- [ ] ...\n- [ ] ..."
+  - type: dropdown
+    id: ruolo
+    attributes:
+      label: Ruolo
+      options:
+        - Responsabile
+        - Amministratore
+        - Analista
+        - Progettista
+        - Programmatore
+        - Verificatore
+    validations:
+      required: true
+  - type: input
+    id: stima
+    attributes:
+      label: Stima in ore
+      placeholder: "es. 3"
+    validations:
+      required: true
+  - type: input
+    id: scadenza
+    attributes:
+      label: Scadenza
+      placeholder: "AAAA-MM-GG"
+  - type: markdown
+    attributes:
+      value: |
+        Le ore si segnano nei commenti, mentre si lavora: `/ore 2` (nel vostro ruolo dello sprint) oppure `/ore 1,5 verificatore`.

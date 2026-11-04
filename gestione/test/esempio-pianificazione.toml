@@ -1,0 +1,70 @@
+# Pianificazione INVENTATA, usata solo dalle prove automatiche (test/).
+[organizzazione]
+nome = "Git-Push-Team"
+project = 1
+fuso_orario = "Europe/Rome"
+repo_privato = ".github-private"
+
+[campi]
+ore_effettive = "Ore effettive"
+ore_stimate = "Ore stimate"
+ruolo = "Ruolo"
+sprint = "Sprint"
+stato = "Status"
+stato_in_revisione = "In review"
+assegna_sprint_corrente = true
+aggiungi_pr_al_project = false
+
+[membri]
+biasini    = { nome = "Enrico Biasini",      github = "enricobiasini" }
+cescobolla = { nome = "Luca Cesco Bolla",    github = "itsluca57" }
+corro      = { nome = "Alessio Corrò",       github = "alec0r" }
+guglielmo  = { nome = "Francesco Guglielmo", github = "firestone109" }
+mazzurana  = { nome = "Francesco Mazzurana", github = "MaZzU05" }
+spagnoli   = { nome = "Gaetano Spagnoli",    github = "gaexxx" }
+
+[ruoli]
+Responsabile   = 30
+Amministratore = 20
+Analista       = 25
+Progettista    = 25
+Programmatore  = 15
+Verificatore   = 15
+
+[preventivo]
+fine_progetto = 2027-03-23
+tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17, Programmatore = 22, Verificatore = 19 }
+
+[scadenze]
+RTB = 2027-01-18
+"Fine progetto" = 2027-03-23
+
+[[sprint]]
+numero = 1
+inizio = 2026-11-02
+fine = 2026-11-15
+obiettivi = [
+  { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#70"] },
+  { testo = "Struttura del Piano di Progetto", issue = ["docs#71", "docs#72"] },
+  { testo = "Primo incontro di analisi con Eggon" },
+]
+[sprint.ruoli]
+biasini    = { Analista = 10 }
+cescobolla = { Verificatore = 10 }
+corro      = { Analista = 10 }
+guglielmo  = { Amministratore = 10 }
+mazzurana  = { Progettista = 10 }
+spagnoli   = { Responsabile = 8, Verificatore = 2 }
+
+[[sprint]]
+numero = 2
+inizio = 2026-11-16
+fine = 2026-11-29
+obiettivi = [ { testo = "Casi d'uso principali", issue = ["docs#80"] } ]
+[sprint.ruoli]
+biasini    = { Verificatore = 10 }
+cescobolla = { Analista = 10 }
+corro      = { Responsabile = 9 }
+guglielmo  = { Analista = 10 }
+mazzurana  = { Amministratore = 10 }
+spagnoli   = { Progettista = 10 }

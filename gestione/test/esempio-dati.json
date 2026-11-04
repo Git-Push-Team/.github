@@ -1,0 +1,690 @@
+{
+ "titolo": "GIT PUSH TEAM",
+ "elementi": [
+  {
+   "id": "PVTI_7",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Amministratore",
+      "field": {
+       "name": "Ruolo"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldNumberValue",
+      "number": 6,
+      "field": {
+       "name": "Ore stimate"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-02",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Done",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_8",
+    "number": 70,
+    "title": "Norme di Progetto: prima stesura",
+    "url": "https://github.com/Git-Push-Team/docs/issues/70",
+    "state": "CLOSED",
+    "closedAt": "2026-11-12T10:00:00Z",
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "firestone109"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_2",
+       "url": "https://github.com/Git-Push-Team/x#c2",
+       "body": "Fatta la struttura.\n/ore 2\n/ore 1,5 2026-11-04",
+       "createdAt": "2026-11-05T19:00:00Z",
+       "author": {
+        "login": "firestone109",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_3",
+       "url": "https://github.com/Git-Push-Team/x#c3",
+       "body": "/ore 2h amministratore",
+       "createdAt": "2026-11-10T20:00:00Z",
+       "author": {
+        "login": "firestone109",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_4",
+       "url": "https://github.com/Git-Push-Team/x#c4",
+       "body": "Esempio per gli altri:\n```\n/ore 99\n```",
+       "createdAt": "2026-11-10T20:05:00Z",
+       "author": {
+        "login": "firestone109",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_5",
+       "url": "https://github.com/Git-Push-Team/x#c5",
+       "body": "<!-- riepilogo-ore -->\n/ore 2",
+       "createdAt": "2026-11-10T20:06:00Z",
+       "author": {
+        "login": "git-push-team-gestione",
+        "__typename": "Bot"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": [
+      {
+       "id": "PR_6",
+       "number": 75,
+       "url": "https://github.com/Git-Push-Team/docs/pull/75",
+       "repository": {
+        "nameWithOwner": "Git-Push-Team/docs"
+       },
+       "comments": {
+        "nodes": [
+         {
+          "id": "IC_1",
+          "url": "https://github.com/Git-Push-Team/x#c1",
+          "body": "Verificata, tutto ok.\n/ore 1 verificatore",
+          "createdAt": "2026-11-11T18:00:00Z",
+          "author": {
+           "login": "itsluca57",
+           "__typename": "User"
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "PVTI_12",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Responsabile",
+      "field": {
+       "name": "Ruolo"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldNumberValue",
+      "number": 4,
+      "field": {
+       "name": "Ore stimate"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-02",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "In review",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_13",
+    "number": 71,
+    "title": "Piano di Progetto: struttura",
+    "url": "https://github.com/Git-Push-Team/docs/issues/71",
+    "state": "OPEN",
+    "closedAt": null,
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "gaexxx"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_9",
+       "url": "https://github.com/Git-Push-Team/x#c9",
+       "body": "/ore 3",
+       "createdAt": "2026-11-06T17:00:00Z",
+       "author": {
+        "login": "gaexxx",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_10",
+       "url": "https://github.com/Git-Push-Team/x#c10",
+       "body": "/ore abc",
+       "createdAt": "2026-11-06T17:01:00Z",
+       "author": {
+        "login": "gaexxx",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_11",
+       "url": "https://github.com/Git-Push-Team/x#c11",
+       "body": "/ore 5",
+       "createdAt": "2026-11-06T17:02:00Z",
+       "author": {
+        "login": "sconosciuto",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_15",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Progettista",
+      "field": {
+       "name": "Ruolo"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldNumberValue",
+      "number": 4,
+      "field": {
+       "name": "Ore stimate"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-02",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Done",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_16",
+    "number": 72,
+    "title": "Piano di Progetto: analisi dei rischi",
+    "url": "https://github.com/Git-Push-Team/docs/issues/72",
+    "state": "CLOSED",
+    "closedAt": "2026-11-08T10:00:00Z",
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "MaZzU05"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_14",
+       "url": "https://github.com/Git-Push-Team/x#c14",
+       "body": "/ore 4 progettista\n/ore 1 programmatore",
+       "createdAt": "2026-11-07T10:00:00Z",
+       "author": {
+        "login": "MaZzU05",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_17",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-02",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Done",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_18",
+    "number": 73,
+    "title": "Correggere refusi nel Glossario",
+    "url": "https://github.com/Git-Push-Team/docs/issues/73",
+    "state": "CLOSED",
+    "closedAt": "2026-11-09T10:00:00Z",
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "enricobiasini"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": []
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_25",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-02",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Done",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_26",
+    "number": 74,
+    "title": "Riunione interna 2026-11-09",
+    "url": "https://github.com/Git-Push-Team/docs/issues/74",
+    "state": "CLOSED",
+    "closedAt": "2026-11-10T10:00:00Z",
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": []
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_19",
+       "url": "https://github.com/Git-Push-Team/x#c19",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "enricobiasini",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_20",
+       "url": "https://github.com/Git-Push-Team/x#c20",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "itsluca57",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_21",
+       "url": "https://github.com/Git-Push-Team/x#c21",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "alec0r",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_22",
+       "url": "https://github.com/Git-Push-Team/x#c22",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "firestone109",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_23",
+       "url": "https://github.com/Git-Push-Team/x#c23",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "MaZzU05",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_24",
+       "url": "https://github.com/Git-Push-Team/x#c24",
+       "body": "/ore 1",
+       "createdAt": "2026-11-09T21:30:00Z",
+       "author": {
+        "login": "gaexxx",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_30",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Analista",
+      "field": {
+       "name": "Ruolo"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldNumberValue",
+      "number": 8,
+      "field": {
+       "name": "Ore stimate"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-16",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "In Progress",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_31",
+    "number": 80,
+    "title": "Analisi dei Requisiti: casi d'uso principali",
+    "url": "https://github.com/Git-Push-Team/docs/issues/80",
+    "state": "OPEN",
+    "closedAt": null,
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "itsluca57"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_27",
+       "url": "https://github.com/Git-Push-Team/x#c27",
+       "body": "/ore 2 verificatore",
+       "createdAt": "2026-11-17T18:00:00Z",
+       "author": {
+        "login": "enricobiasini",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_28",
+       "url": "https://github.com/Git-Push-Team/x#c28",
+       "body": "/ore 3 analista 2026-11-18",
+       "createdAt": "2026-11-19T18:00:00Z",
+       "author": {
+        "login": "enricobiasini",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_29",
+       "url": "https://github.com/Git-Push-Team/x#c29",
+       "body": "/ore 2,5",
+       "createdAt": "2026-11-18T18:00:00Z",
+       "author": {
+        "login": "itsluca57",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_34",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Progettista",
+      "field": {
+       "name": "Ruolo"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldNumberValue",
+      "number": 6,
+      "field": {
+       "name": "Ore stimate"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldIterationValue",
+      "title": "Sprint",
+      "startDate": "2026-11-16",
+      "duration": 14,
+      "field": {
+       "name": "Sprint"
+      }
+     },
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "In Progress",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "Issue",
+    "id": "I_35",
+    "number": 3,
+    "title": "PoC: primo prototipo con RubyLLM",
+    "url": "https://github.com/Git-Push-Team/poc/issues/3",
+    "state": "OPEN",
+    "closedAt": null,
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/poc"
+    },
+    "assignees": {
+     "nodes": [
+      {
+       "login": "gaexxx"
+      }
+     ]
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_32",
+       "url": "https://github.com/Git-Push-Team/x#c32",
+       "body": "/ore 1 responsabile",
+       "createdAt": "2026-11-17T09:00:00Z",
+       "author": {
+        "login": "alec0r",
+        "__typename": "User"
+       }
+      },
+      {
+       "id": "IC_33",
+       "url": "https://github.com/Git-Push-Team/x#c33",
+       "body": "/ore 2 progettista\n/ore 1h30 progettista",
+       "createdAt": "2026-11-18T09:00:00Z",
+       "author": {
+        "login": "gaexxx",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closedByPullRequestsReferences": {
+     "nodes": []
+    }
+   }
+  },
+  {
+   "id": "PVTI_pr75",
+   "fieldValues": {
+    "nodes": [
+     {
+      "__typename": "ProjectV2ItemFieldSingleSelectValue",
+      "name": "Done",
+      "field": {
+       "name": "Status"
+      }
+     }
+    ]
+   },
+   "content": {
+    "__typename": "PullRequest",
+    "id": "PR_75",
+    "number": 75,
+    "title": "Norme: prima stesura",
+    "url": "https://github.com/Git-Push-Team/docs/pull/75",
+    "state": "MERGED",
+    "closedAt": "2026-11-12T10:00:00Z",
+    "repository": {
+     "nameWithOwner": "Git-Push-Team/docs"
+    },
+    "assignees": {
+     "nodes": []
+    },
+    "comments": {
+     "nodes": [
+      {
+       "id": "IC_1",
+       "url": "https://github.com/Git-Push-Team/x#c1",
+       "body": "Verificata, tutto ok.\n/ore 1 verificatore",
+       "createdAt": "2026-11-11T18:00:00Z",
+       "author": {
+        "login": "itsluca57",
+        "__typename": "User"
+       }
+      }
+     ]
+    },
+    "closingIssuesReferences": {
+     "nodes": [
+      {
+       "number": 70,
+       "repository": {
+        "nameWithOwner": "Git-Push-Team/docs"
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "PVTI_bozza",
+   "fieldValues": {
+    "nodes": []
+   },
+   "content": {
+    "__typename": "DraftIssue",
+    "title": "Idea da valutare"
+   }
+  }
+ ],
+ "letto_il": "2026-11-20T03:00:00+01:00"
+}

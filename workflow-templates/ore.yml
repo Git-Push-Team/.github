@@ -1,0 +1,17 @@
+# Comando /ore: chi lavora a una issue (o la verifica in una PR) scrive un
+# commento con "/ore 2" o "/ore 1,5 verificatore" e il bot aggiorna le ore.
+# Il lavoro vero lo fa il workflow comune in Git-Push-Team/.github.
+name: Ore
+
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+
+jobs:
+  ore:
+    # solo commenti (o vecchie versioni di commenti) con /ore, non scritti da bot
+    if: >-
+      (contains(github.event.comment.body, '/ore') || contains(github.event.changes.body.from, '/ore'))
+      && github.event.comment.user.type != 'Bot'
+    uses: Git-Push-Team/.github/.github/workflows/ore.yml@main
+    secrets: inherit
