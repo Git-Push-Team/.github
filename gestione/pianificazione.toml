@@ -77,36 +77,138 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 #        di solito un ruolo per persona; se qualcuno ne fa due, scrivetene
 #        due. Il ruolo con più ore è quello predefinito per /ore.
 # ---------------------------------------------------------------------
+
 [[sprint]]
 numero = 1
-inizio = 2026-10-26
-fine = 2026-11-08
+inizio = 2026-11-02
+fine = 2026-11-15
 obiettivi = [
   { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#72"] },
   { testo = "Primo incontro di analisi con Eggon" },
   { testo = "Definizione cruscotto qualità", issue = ["docs#69"] },
   { testo = "Studio documentazione", issue = ["docs#68"] },
 ]
-
 [sprint.ruoli]
-# COMPILATE: ruolo e ore pianificate di ognuno in questo sprint, per esempio
-biasini    = { Amministratore = 10 }
-cescobolla = { Responsabile = 10 }
-corro      = { Verificatore = 10 }
-guglielmo  = { Analista = 10 }
-mazzurana  = { Analista = 10 }
-spagnoli   = { Analista = 10 }
+biasini    = { Amministratore = 12 }
+cescobolla = { Analista = 6 }
+corro      = { Progettista = 8 }
+guglielmo  = { Analista = 13 }
+mazzurana  = { Verificatore = 9.5 }
+spagnoli   = { Responsabile = 4.5 }
 
 [[sprint]]
 numero = 2
-inizio = 2026-11-09
-fine = 2026-11-22
+inizio = 2026-11-16
+fine = 2026-11-29
 obiettivi = []
-
 [sprint.ruoli]
-biasini    = { Amministratore = 9 }
-cescobolla = { Responsabile = 10 }
-corro      = { Verificatore = 10 }
-guglielmo  = { Analista = 10 }
-mazzurana  = { Analista = 10 }
-spagnoli   = { Analista = 10 }
+biasini    = { Responsabile = 4.5 }
+cescobolla = { Progettista = 8 }
+corro      = { Analista = 6 }
+guglielmo  = { Amministratore = 12 }
+mazzurana  = { Analista = 13 }
+spagnoli   = { Verificatore = 12 }
+
+[[sprint]]
+numero = 3
+inizio = 2026-11-30
+fine = 2026-12-13
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Analista = 13 }
+cescobolla = { Amministratore = 12 }
+corro      = { Verificatore = 9.5 }
+guglielmo  = { Programmatore = 10 }
+mazzurana  = { Responsabile = 4.5 }
+spagnoli   = { Progettista = 9 }
+
+[[sprint]]
+numero = 4
+inizio = 2026-12-14
+fine = 2026-12-27
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Progettista = 7 }
+cescobolla = { Programmatore = 9 }
+corro      = { Analista = 7 }
+guglielmo  = { Responsabile = 4.5 }
+mazzurana  = { Programmatore = 9 }
+spagnoli   = { Verificatore = 7 }
+
+[[sprint]]
+numero = 5
+inizio = 2026-12-28
+fine = 2027-01-10
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Programmatore = 9 }
+cescobolla = { Analista = 7 }
+corro      = { Programmatore = 9 }
+guglielmo  = { Verificatore = 7 }
+mazzurana  = { Progettista = 7 }
+spagnoli   = { Responsabile = 4.5 }
+
+[[sprint]]
+numero = 6
+inizio = 2027-01-11
+fine = 2027-01-24
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Verificatore = 9.5 }
+cescobolla = { Responsabile = 9 }
+corro      = { Verificatore = 9.5 }
+guglielmo  = { Progettista = 8 }
+mazzurana  = { Amministratore = 12 }
+spagnoli   = { Programmatore = 10 }
+
+[[sprint]]
+numero = 7
+inizio = 2027-01-25
+fine = 2027-02-07
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Programmatore = 13 }
+cescobolla = { Progettista = 9 }
+corro      = { Amministratore = 12 }
+guglielmo  = { Responsabile = 4.5 }
+mazzurana  = { Verificatore = 9.5 }
+spagnoli   = { Analista = 13 }
+
+[[sprint]]
+numero = 8
+inizio = 2027-02-08
+fine = 2027-02-21
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Responsabile = 4.5 }
+cescobolla = { Verificatore = 9.5 }
+corro      = { Programmatore = 13 }
+guglielmo  = { Progettista = 9 }
+mazzurana  = { Programmatore = 13 }
+spagnoli   = { Progettista = 8 }
+
+[[sprint]]
+numero = 9
+inizio = 2027-02-22
+fine = 2027-03-07
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Progettista = 10 }
+cescobolla = { Programmatore = 13 }
+corro      = { Progettista = 9 }
+guglielmo  = { Verificatore = 12 }
+mazzurana  = { Responsabile = 4.5 }
+spagnoli   = { Programmatore = 12 }
+
+[[sprint]]
+numero = 10
+inizio = 2027-03-08
+fine = 2027-03-21
+obiettivi = []
+[sprint.ruoli]
+biasini    = { Verificatore = 9.5 }
+cescobolla = { Verificatore = 9.5 }
+corro      = { Responsabile = 9 }
+guglielmo  = { Programmatore = 12 }
+mazzurana  = { Progettista = 10 }
+spagnoli   = { Amministratore = 12 }
