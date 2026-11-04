@@ -186,6 +186,26 @@ class ComandoOreSuGitHub(unittest.TestCase):
         self.assertEqual(gh.mutazioni("addReaction")[0]["r"], "CONFUSED")
 
 
+class RiepilogoAZero(unittest.TestCase):
+    def test_commenti_cancellati(self):
+        """Cancellati tutti i /ore, il riepilogo esistente torna a 0 ore."""
+        vecchio = commento("bot", "<!-- riepilogo-ore -->\n### Ore registrate: 0,5", bot=True, id_="R")
+        issue = {"__typename": "Issue", "id": "I1", "number": 7, "title": "T", "url": "u",
+                 "repository": {"nameWithOwner": "Git-Push-Team/docs"},
+                 "comments": {"nodes": [vecchio]},
+                 "projectItems": {"nodes": [{"id": "ITEM", "project": {"id": "P"}}]},
+                 "closedByPullRequestsReferences": {"nodes": []}}
+        gh = FintoGitHub({7: issue})
+        evento = {"action": "deleted", "repository": {"full_name": "Git-Push-Team/docs"},
+                  "issue": {"number": 7}, "comment": {"node_id": "X", "body": "/ore 0,5"}}
+        ore.gestisci(gh, CONF, evento)
+        self.assertEqual(gh.mutazioni("updateProjectV2ItemFieldValue")[0]["v"], {"number": 0.0})
+        aggiornato = gh.mutazioni("updateIssueComment")[0]
+        self.assertEqual(aggiornato["id"], "R")
+        self.assertIn("Ore registrate: 0", aggiornato["corpo"])
+        self.assertEqual(gh.mutazioni("addComment"), [])
+
+
 class CollegamentoProject(unittest.TestCase):
     def test_issue_aperta(self):
         gh = FintoGitHub({"issue": {"id": "I1", "number": 5, "title": "T", "projectItems": {"nodes": []}}})

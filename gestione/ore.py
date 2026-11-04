@@ -116,7 +116,8 @@ def riepilogo(voci: list[Voce], scarti: list[Scarto], conf: Configurazione, nota
     return "\n".join(righe)
 
 
-def aggiorna_riepilogo(gh: GitHub, nodo: dict, testo: str) -> None:
+def aggiorna_riepilogo(gh: GitHub, nodo: dict, testo: str, crea: bool = True) -> None:
+    """Aggiorna il commento di riepilogo; se non c'è lo crea (solo se crea=True)."""
     esistente = next((c for c in tutti_i_commenti(gh, nodo)
                       if MARCATORE in (c.get("body") or "")
                       and (c.get("author") or {}).get("__typename") == "Bot"), None)
@@ -125,7 +126,7 @@ def aggiorna_riepilogo(gh: GitHub, nodo: dict, testo: str) -> None:
             gh.query("""mutation($id: ID!, $corpo: String!) {
                           updateIssueComment(input: {id: $id, body: $corpo}) { issueComment { id } }
                         }""", id=esistente["id"], corpo=testo)
-    else:
+    elif crea:
         gh.query("""mutation($id: ID!, $corpo: String!) {
                       addComment(input: {subjectId: $id, body: $corpo}) { commentEdge { node { id } } }
                     }""", id=nodo["id"], corpo=testo)
@@ -172,8 +173,10 @@ def gestisci(gh: GitHub, conf: Configurazione, evento: dict) -> None:
             item = elemento(gh, project, destinazione, aggiungi=True)
         if item:
             imposta_numero(gh, project, item, conf.campo("ore_effettive"), sum(v.ore for v in voci))
-        if voci or scarti or nota:
-            aggiorna_riepilogo(gh, destinazione, riepilogo(voci, scarti, conf, nota))
+        # il riepilogo si crea alla prima ora registrata e poi si aggiorna sempre,
+        # anche quando tutti i comandi vengono cancellati (torna a 0)
+        aggiorna_riepilogo(gh, destinazione, riepilogo(voci, scarti, conf, nota),
+                           crea=bool(voci or scarti or nota))
         print(f"{riferimento(destinazione['repository']['nameWithOwner'], destinazione['number'], conf.organizzazione)}: "
               f"{len(voci)} registrazioni, {ore_testo(sum(v.ore for v in voci))} ore, {len(scarti)} non valide")
 
