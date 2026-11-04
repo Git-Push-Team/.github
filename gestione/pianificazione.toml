@@ -79,26 +79,28 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 # ---------------------------------------------------------------------
 [[sprint]]
 numero = 1
-inizio = 2026-11-02
-fine = 2026-11-15
+inizio = 2026-10-26
+fine = 2026-11-8
 obiettivi = [
-  # { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#70"] },
-  # { testo = "Primo incontro di analisi con Eggon" },
+  { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#72"] },
+  { testo = "Primo incontro di analisi con Eggon" },
+  { testo = "Definizione cruscotto qualità", issue = ["docs#69"] },
+  { testo = "Studio documentazione", issue = ["docs#68"] },
 ]
 
 [sprint.ruoli]
 # COMPILATE: ruolo e ore pianificate di ognuno in questo sprint, per esempio
-# biasini    = { Analista = 10 }
-# cescobolla = { Verificatore = 10 }
-# corro      = { Analista = 10 }
-# guglielmo  = { Amministratore = 10 }
-# mazzurana  = { Progettista = 10 }
-# spagnoli   = { Responsabile = 8, Verificatore = 2 }
+# biasini    = { Amministratore = 10 }
+# cescobolla = { Responsabile = 10 }
+# corro      = { Verificatore = 10 }
+# guglielmo  = { Analista = 10 }
+# mazzurana  = { Analista = 10 }
+# spagnoli   = { Analista = 10 }
 
 [[sprint]]
 numero = 2
-inizio = 2026-11-16
-fine = 2026-11-29
+inizio = 2026-11-9
+fine = 2026-11-22
 obiettivi = []
 
 [sprint.ruoli]
