@@ -90,11 +90,11 @@ obiettivi = [
 ]
 [sprint.ruoli]
 biasini    = { Amministratore = 12 }
-cescobolla = { Analista = 6 }
-corro      = { Progettista = 8 }
+cescobolla = { Responsabile = 4.5 }
+corro      = { Verificatore = 9.5 }
 guglielmo  = { Analista = 13 }
-mazzurana  = { Verificatore = 9.5 }
-spagnoli   = { Responsabile = 4.5 }
+mazzurana  = { Analista = 6 }
+spagnoli   = { Progettista = 8 }
 
 [[sprint]]
 numero = 2
@@ -102,12 +102,12 @@ inizio = 2026-11-16
 fine = 2026-11-29
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Responsabile = 4.5 }
-cescobolla = { Progettista = 8 }
+biasini    = { Analista = 13 }
+cescobolla = { Verificatore = 12 }
 corro      = { Analista = 6 }
-guglielmo  = { Amministratore = 12 }
-mazzurana  = { Analista = 13 }
-spagnoli   = { Verificatore = 12 }
+guglielmo  = { Progettista = 8 }
+mazzurana  = { Amministratore = 12 }
+spagnoli   = { Responsabile = 4.5 }
 
 [[sprint]]
 numero = 3
@@ -115,12 +115,12 @@ inizio = 2026-11-30
 fine = 2026-12-13
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Analista = 13 }
-cescobolla = { Amministratore = 12 }
-corro      = { Verificatore = 9.5 }
-guglielmo  = { Programmatore = 10 }
-mazzurana  = { Responsabile = 4.5 }
-spagnoli   = { Progettista = 9 }
+biasini    = { Responsabile = 4.5 }
+cescobolla = { Programmatore = 10 }
+corro      = { Progettista = 9 }
+guglielmo  = { Amministratore = 12 }
+mazzurana  = { Verificatore = 9.5 }
+spagnoli   = { Analista = 13 }
 
 [[sprint]]
 numero = 4
@@ -129,11 +129,11 @@ fine = 2026-12-27
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Progettista = 7 }
-cescobolla = { Programmatore = 9 }
-corro      = { Analista = 7 }
-guglielmo  = { Responsabile = 4.5 }
-mazzurana  = { Programmatore = 9 }
-spagnoli   = { Verificatore = 7 }
+cescobolla = { Verificatore = 7 }
+corro      = { Programmatore = 9 }
+guglielmo  = { Programmatore = 9 }
+mazzurana  = { Analista = 7 }
+spagnoli   = { Responsabile = 4.5 }
 
 [[sprint]]
 numero = 5
@@ -142,11 +142,11 @@ fine = 2027-01-10
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Programmatore = 9 }
-cescobolla = { Analista = 7 }
-corro      = { Programmatore = 9 }
-guglielmo  = { Verificatore = 7 }
-mazzurana  = { Progettista = 7 }
-spagnoli   = { Responsabile = 4.5 }
+cescobolla = { Progettista = 7 }
+corro      = { Analista = 7 }
+guglielmo  = { Responsabile = 4.5 }
+mazzurana  = { Programmatore = 9 }
+spagnoli   = { Verificatore = 7 }
 
 [[sprint]]
 numero = 6
@@ -155,10 +155,10 @@ fine = 2027-01-24
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Verificatore = 9.5 }
-cescobolla = { Responsabile = 9 }
-corro      = { Verificatore = 9.5 }
-guglielmo  = { Progettista = 8 }
-mazzurana  = { Amministratore = 12 }
+cescobolla = { Amministratore = 12 }
+corro      = { Responsabile = 9 }
+guglielmo  = { Verificatore = 9.5 }
+mazzurana  = { Progettista = 8 }
 spagnoli   = { Programmatore = 10 }
 
 [[sprint]]
@@ -167,12 +167,12 @@ inizio = 2027-01-25
 fine = 2027-02-07
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Programmatore = 13 }
-cescobolla = { Progettista = 9 }
-corro      = { Amministratore = 12 }
-guglielmo  = { Responsabile = 4.5 }
-mazzurana  = { Verificatore = 9.5 }
-spagnoli   = { Analista = 13 }
+biasini    = { Responsabile = 4.5 }
+cescobolla = { Analista = 13 }
+corro      = { Verificatore = 9.5 }
+guglielmo  = { Progettista = 9 }
+mazzurana  = { Programmatore = 13 }
+spagnoli   = { Amministratore = 12 }
 
 [[sprint]]
 numero = 8
@@ -180,12 +180,12 @@ inizio = 2027-02-08
 fine = 2027-02-21
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Responsabile = 4.5 }
-cescobolla = { Verificatore = 9.5 }
-corro      = { Programmatore = 13 }
-guglielmo  = { Progettista = 9 }
-mazzurana  = { Programmatore = 13 }
-spagnoli   = { Progettista = 8 }
+biasini    = { Programmatore = 13 }
+cescobolla = { Responsabile = 4.5 }
+corro      = { Progettista = 8 }
+guglielmo  = { Programmatore = 13 }
+mazzurana  = { Verificatore = 9.5 }
+spagnoli   = { Progettista = 9 }
 
 [[sprint]]
 numero = 9
@@ -194,11 +194,11 @@ fine = 2027-03-07
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Progettista = 10 }
-cescobolla = { Programmatore = 13 }
-corro      = { Progettista = 9 }
-guglielmo  = { Verificatore = 12 }
-mazzurana  = { Responsabile = 4.5 }
-spagnoli   = { Programmatore = 12 }
+cescobolla = { Programmatore = 12 }
+corro      = { Programmatore = 13 }
+guglielmo  = { Responsabile = 4.5 }
+mazzurana  = { Progettista = 9 }
+spagnoli   = { Verificatore = 12 }
 
 [[sprint]]
 numero = 10
@@ -207,8 +207,8 @@ fine = 2027-03-21
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Verificatore = 9.5 }
-cescobolla = { Verificatore = 9.5 }
-corro      = { Responsabile = 9 }
-guglielmo  = { Programmatore = 12 }
-mazzurana  = { Progettista = 10 }
-spagnoli   = { Amministratore = 12 }
+cescobolla = { Progettista = 10 }
+corro      = { Amministratore = 12 }
+guglielmo  = { Verificatore = 9.5 }
+mazzurana  = { Responsabile = 9 }
+spagnoli   = { Programmatore = 12 }
