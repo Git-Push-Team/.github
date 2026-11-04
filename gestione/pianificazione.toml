@@ -90,17 +90,23 @@ obiettivi = [
 
 [sprint.ruoli]
 # COMPILATE: ruolo e ore pianificate di ognuno in questo sprint, per esempio
-# biasini    = { Amministratore = 10 }
-# cescobolla = { Responsabile = 10 }
-# corro      = { Verificatore = 10 }
-# guglielmo  = { Analista = 10 }
-# mazzurana  = { Analista = 10 }
-# spagnoli   = { Analista = 10 }
+biasini    = { Amministratore = 10 }
+cescobolla = { Responsabile = 10 }
+corro      = { Verificatore = 10 }
+guglielmo  = { Analista = 10 }
+mazzurana  = { Analista = 10 }
+spagnoli   = { Analista = 10 }
 
 [[sprint]]
 numero = 2
-inizio = 2026-11-9
+inizio = 2026-11-09
 fine = 2026-11-22
 obiettivi = []
 
 [sprint.ruoli]
+biasini    = { Amministratore = 10 }
+cescobolla = { Responsabile = 10 }
+corro      = { Verificatore = 10 }
+guglielmo  = { Analista = 10 }
+mazzurana  = { Analista = 10 }
+spagnoli   = { Analista = 10 }
