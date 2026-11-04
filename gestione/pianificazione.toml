@@ -104,7 +104,7 @@ fine = 2026-11-22
 obiettivi = []
 
 [sprint.ruoli]
-biasini    = { Amministratore = 10 }
+biasini    = { Amministratore = 9 }
 cescobolla = { Responsabile = 10 }
 corro      = { Verificatore = 10 }
 guglielmo  = { Analista = 10 }
