@@ -80,7 +80,7 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 [[sprint]]
 numero = 1
 inizio = 2026-10-26
-fine = 2026-11-8
+fine = 2026-11-08
 obiettivi = [
   { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#72"] },
   { testo = "Primo incontro di analisi con Eggon" },
