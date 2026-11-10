@@ -14,7 +14,7 @@ from datetime import date
 
 from comune import RUOLI, Configurazione, Obiettivo, Sprint, ore_testo
 from dati import Attivita, DatiProject
-from registro_ore import Voce
+from registro_ore import Voce, controlla
 
 
 @dataclass
@@ -144,6 +144,9 @@ class Analisi:
                 self.anomalie.append(Anomalia("Ruolo non pianificato",
                                               f"{self.conf.membri[v.persona].nome}, {ore_testo(v.ore)} h da "
                                               f"{v.ruolo} nello sprint {v.sprint} ({v.fonte})", v.url))
+        # intervalli sovrapposti, troppe ore in un giorno, ore segnate in ritardo
+        for s in controlla(self.dati.voci, self.conf):
+            self.anomalie.append(Anomalia(s.tipo, s.testo, s.url))
         for a in self.dati.attivita:
             if a.tipo == "Issue" and a.chiusa and not a.voci:
                 self.anomalie.append(Anomalia("Issue chiusa senza ore",

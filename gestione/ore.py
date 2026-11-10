@@ -8,7 +8,9 @@ Cosa fa, per la issue a cui il commento si riferisce:
   2. scrive il totale nel campo "Ore effettive" del Project (aggiungendo la
      issue al Project se non c'è);
   3. aggiorna un unico commento di riepilogo: ore per persona e ruolo,
-     dettaglio, comandi non validi;
+     dettaglio (con l'orario, se scritto), cose da controllare (intervalli
+     sovrapposti, troppe ore in un giorno, ore segnate in ritardo), comandi
+     non validi;
   4. mette una reazione al commento: 👍 se è valido, 😕 se c'è un errore.
 
 Un commento su una PR vale per la issue che la PR chiude ("Closes #12").
@@ -24,7 +26,7 @@ from collections import defaultdict
 from bacheca import carica_project, elemento, imposta_numero
 from comune import (COMMENTI, Configurazione, ErroreGitHub, GitHub, avviso,
                     carica_configurazione, ore_testo, riferimento, tutti_i_commenti)
-from registro_ore import MARCATORE, Scarto, Voce, righe_di_comando, voci_da_commenti
+from registro_ore import MARCATORE, Scarto, Voce, controlla, righe_di_comando, voci_da_commenti
 
 DATI_ELEMENTO = """
   id number title url
@@ -92,17 +94,24 @@ def riepilogo(voci: list[Voce], scarti: list[Scarto], conf: Configurazione, nota
                                             key=lambda x: (conf.membri[x[0][0]].nome, x[0][1])):
             righe.append(f"| {conf.membri[persona].nome} | {ruolo} | {ore_testo(ore)} |")
         righe += ["", f"<details><summary>Dettaglio ({len(voci)} registrazioni)</summary>", "",
-                  "| Data | Persona | Ruolo | Ore | Sprint | Dove |",
-                  "| --- | --- | --- | ---: | --- | --- |"]
+                  "| Data | Persona | Ruolo | Orario | Ore | Sprint | Dove |",
+                  "| --- | --- | --- | --- | ---: | --- | --- |"]
         for v in sorted(voci, key=lambda v: (v.giorno, v.persona)):
             sprint = f"{v.sprint}" if v.sprint else "—"
             segno = " ⚑" if v.fuori_piano else ""
             righe.append(f"| {v.giorno.isoformat()} | {conf.membri[v.persona].nome} | {v.ruolo}{segno} "
-                         f"| {ore_testo(v.ore)} | {sprint} | [{v.fonte}]({v.url}) |")
+                         f"| {v.orario or '—'} | {ore_testo(v.ore)} | {sprint} | [{v.fonte}]({v.url}) |")
         righe += ["", "</details>", ""]
         if any(v.fuori_piano for v in voci):
             righe += ["⚑ = ruolo non pianificato per quella persona in quello sprint (le ore contano "
                       "lo stesso; il cruscotto le segnala).", ""]
+    segnalazioni = controlla(voci, conf)
+    if segnalazioni:
+        righe += ["🔎 **Da controllare** in questa issue (le ore contano lo stesso; se è tutto "
+                  "giusto ignorate, altrimenti correggete il commento):", ""]
+        righe += [f"- {s.tipo}: {s.testo}" + (f" · [commento]({s.url})" if s.url else "")
+                  for s in segnalazioni]
+        righe.append("")
     if scarti:
         righe += ["⚠️ **Comandi non validi**, non contati. Correggete (o cancellate) il commento: "
                   "il riepilogo si aggiorna da solo.", ""]
@@ -110,8 +119,10 @@ def riepilogo(voci: list[Voce], scarti: list[Scarto], conf: Configurazione, nota
             chi = f"@{s.autore}" if conf.membro_da_github(s.autore) else f"`{s.autore}`"
             righe.append(f"- {chi}, [{s.fonte}]({s.url}): `{s.riga}` → {s.motivo}")
         righe.append("")
-    righe.append("<sub>Come si segnano le ore: un commento con <code>/ore 2</code>, "
-                 "<code>/ore 1,5 verificatore</code> o <code>/ore 1h30 analista 2026-11-05</code>. "
+    righe.append("<sub>Come si segnano le ore: un commento con l'orario, "
+                 "<code>/ore 14:00-16:30</code>, <code>/ore 9-11 verificatore</code> o "
+                 "<code>/ore 21:00-22:30 analista 2026-11-05</code>: il bot calcola la durata. "
+                 "Vale ancora il solo totale (<code>/ore 2</code>), ma l'orario si può controllare. "
                  "Una riga per comando; le ore sono di chi scrive il commento.</sub>")
     return "\n".join(righe)
 
