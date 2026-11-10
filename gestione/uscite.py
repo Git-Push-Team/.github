@@ -361,8 +361,10 @@ def leggimi_tabelle(nomi: list[str]) -> str:
 def registro_csv(a: Analisi) -> str:
     uscita = io.StringIO()
     w = csv.writer(uscita)
-    w.writerow(["data", "sprint", "chiave", "persona", "ruolo", "ore", "fuori_piano", "dove", "commento"])
+    w.writerow(["data", "sprint", "chiave", "persona", "ruolo", "ore", "fuori_piano", "dove", "commento",
+                "orario", "scritto_il"])
     for v in sorted(a.dati.voci, key=lambda v: (v.giorno, v.persona)):
         w.writerow([v.giorno.isoformat(), v.sprint or "", v.persona, a.conf.membri[v.persona].nome, v.ruolo,
-                    f"{v.ore:g}", "sì" if v.fuori_piano else "", v.fonte, v.url])
+                    f"{v.ore:g}", "sì" if v.fuori_piano else "", v.fonte, v.url,
+                    v.orario.replace("–", "-"), v.scritto_il.isoformat() if v.scritto_il else ""])
     return uscita.getvalue()

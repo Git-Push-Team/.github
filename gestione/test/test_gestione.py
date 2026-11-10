@@ -14,7 +14,7 @@ import os
 import sys
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, time
 from pathlib import Path
 
 QUI = Path(__file__).resolve().parent
@@ -27,7 +27,10 @@ import progetto                                       # noqa: E402
 from calcoli import Analisi                           # noqa: E402
 from comune import ErroreConfigurazione, carica_configurazione  # noqa: E402
 from dati import leggi                                # noqa: E402
-from registro_ore import interpreta, leggi_ore, voci_da_commenti  # noqa: E402
+from dati import DatiProject                          # noqa: E402
+from registro_ore import (controlla, interpreta, interpreta_completo, leggi_ore,  # noqa: E402
+                          voci_da_commenti)
+from uscite import registro_csv                       # noqa: E402
 
 CONF = carica_configurazione()
 
@@ -77,6 +80,95 @@ class ComandoOre(unittest.TestCase):
                          [("guglielmo", "Amministratore", 2), ("guglielmo", "Analista", 1.5)])
         self.assertTrue(voci[1].fuori_piano)
         self.assertEqual(len(scarti), 2)
+
+
+class OreConOrario(unittest.TestCase):
+    """/ore 14:00-16:30: il bot calcola la durata; la vecchia forma vale ancora."""
+    GIORNO = date(2026, 11, 5)
+
+    def esito(self, riga, ora=time(23, 59), giorno=None):
+        return interpreta_completo(riga, giorno or self.GIORNO, "spagnoli", CONF, ora)
+
+    def test_intervalli(self):
+        for riga, atteso in [("/ore 14:00-16:30", (2.5, time(14), time(16, 30))),
+                             ("/ore 14.00 - 16.30", (2.5, time(14), time(16, 30))),
+                             ("/ore 9-11 verificatore", (2, time(9), time(11))),
+                             ("/ore 22:00-24:00", (2, time(22), time(0))),
+                             ("/ore 23:30–00:30 2026-11-04", (1, time(23, 30), time(0, 30)))]:
+            esito = self.esito(riga)
+            self.assertNotIsInstance(esito, str, riga)
+            self.assertEqual((esito[0], esito[4], esito[5]), atteso, riga)
+        self.assertEqual(self.esito("/ore 9-11 verificatore")[1], "Verificatore")
+        self.assertEqual(self.esito("/ore 14:00-16:30")[1], "Responsabile")   # ruolo dello sprint
+        self.assertEqual(self.esito("/ore 23:30-00:30 2026-11-04")[2], date(2026, 11, 4))
+        # interpreta (usata finora) restituisce sempre 4 valori
+        self.assertEqual(len(interpreta("/ore 14:00-16:30", self.GIORNO, "spagnoli", CONF)), 4)
+
+    def test_errori_orario(self):
+        for riga, motivo in [("/ore 25:00-26:00", "non è un orario"), ("/ore 14:70-15:00", "non è un orario"),
+                             ("/ore 14:00-14:00", "coincidono"), ("/ore 16:00-14:00", "al massimo"),
+                             ("/ore 14:00-16:30 boh", "non capisco"), ("/ore 14:00", "non è un orario")]:
+            self.assertIn(motivo, self.esito(riga), riga)
+
+    def test_orario_dopo_il_commento(self):
+        self.assertIn("finisce dopo", self.esito("/ore 14:00-16:30", ora=time(15, 0)))
+        self.assertNotIsInstance(self.esito("/ore 14:00-16:30", ora=time(16, 50)), str)   # margine
+        self.assertNotIsInstance(self.esito("/ore 14:00-16:30 2026-11-04", ora=time(15, 0)), str)
+        # a cavallo della mezzanotte, scritto dopo mezzanotte senza data: giorno prima
+        esito = self.esito("/ore 23:00-00:30", ora=time(0, 45), giorno=date(2026, 11, 6))
+        self.assertEqual(esito[2], date(2026, 11, 5))
+
+    def test_vecchia_e_nuova_forma_insieme(self):
+        # 19:00Z = 20:00 a Roma
+        voci, scarti = voci_da_commenti([commento("gaexxx", "/ore 2\n/ore 14:00-16:30", id_="A")],
+                                        "docs#1", CONF)
+        self.assertEqual(scarti, [])
+        self.assertEqual([(v.ore, v.orario, v.scritto_il) for v in voci],
+                         [(2, "", self.GIORNO), (2.5, "14:00–16:30", self.GIORNO)])
+        _, scarti = voci_da_commenti([commento("gaexxx", "/ore 20:00-22:00", id_="B")], "docs#1", CONF)
+        self.assertIn("finisce dopo", scarti[0].motivo)
+
+    def voci_di_prova(self):
+        commenti = [
+            commento("gaexxx", "/ore 14:00-16:30", "2026-11-05T19:00:00Z", id_="A"),
+            # si sovrappone dalle 16:00 alle 16:30 (in un'altra issue)
+            commento("gaexxx", "/ore 16:00-18:00 verificatore", "2026-11-05T19:30:00Z", id_="B"),
+            commento("gaexxx", "/ore 18:00-19:00", "2026-11-05T19:30:00Z", id_="C"),  # attaccato: ok
+            commento("gaexxx", "/ore 4", "2026-11-05T21:00:00Z", id_="D"),            # totale 9,5 > 8
+            commento("gaexxx", "/ore 9-10 2026-11-02", "2026-11-06T10:00:00Z", id_="E"),  # 4 giorni dopo
+            commento("alec0r", "/ore 14:00-16:30", "2026-11-05T19:00:00Z", id_="F"),  # altra persona
+        ]
+        voci = voci_da_commenti(commenti[:1], "docs#1", CONF)[0]
+        voci += voci_da_commenti(commenti[1:], "docs#2", CONF)[0]
+        return voci
+
+    def test_controlli(self):
+        segnalazioni = controlla(self.voci_di_prova(), CONF)
+        self.assertEqual([s.tipo for s in segnalazioni],
+                         ["Intervalli sovrapposti", "Troppe ore in un giorno", "Ore segnate in ritardo"])
+        testi = " ".join(s.testo for s in segnalazioni)
+        for pezzo in ["14:00–16:30 (docs#1) e 16:00–18:00 (docs#2)", "9,5 ore", "4 giorni dopo"]:
+            self.assertIn(pezzo, testi)
+
+    def test_riepilogo_cruscotto_e_csv(self):
+        voci = self.voci_di_prova()
+        testo = ore.riepilogo(voci, [], CONF)
+        for pezzo in ["| Orario |", "| 14:00–16:30 |", "| — |", "Da controllare",
+                      "Intervalli sovrapposti", "/ore 14:00-16:30"]:
+            self.assertIn(pezzo, testo)
+        analisi = Analisi(CONF, DatiProject("P", [], voci, []), date(2026, 11, 20))
+        tipi = [a.tipo for a in analisi.anomalie]
+        for tipo in ["Intervalli sovrapposti", "Troppe ore in un giorno", "Ore segnate in ritardo"]:
+            self.assertEqual(tipi.count(tipo), 1, tipo)
+        csv = registro_csv(analisi)
+        self.assertIn("orario,scritto_il", csv.splitlines()[0])
+        self.assertIn("14:00-16:30,2026-11-05", csv)
+
+    def test_niente_segnalazioni_con_ore_normali(self):
+        voci, _ = voci_da_commenti([commento("gaexxx", "/ore 2\n/ore 9-11\n/ore 14:00-16:30", id_="A")],
+                                   "docs#1", CONF)
+        self.assertEqual(controlla(voci, CONF), [])
+        self.assertNotIn("Da controllare", ore.riepilogo(voci, [], CONF))
 
 
 class Configurazione(unittest.TestCase):
