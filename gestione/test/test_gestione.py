@@ -216,6 +216,9 @@ class Cruscotto(unittest.TestCase):
             testo = (Path(d) / "README.md").read_text(encoding="utf-8")
             self.assertIn("Sprint 2", testo)
             self.assertIn("11.250,00 €", testo)
+            # "Assegnata a" con nome e cognome (due Francesco nel gruppo)
+            riga = next(r for r in testo.splitlines() if "docs#80" in r and "In Progress" in r)
+            self.assertIn("| Luca Cesco Bolla |", riga)
 
 
 class FintoGitHub:

@@ -164,7 +164,7 @@ def _attivita(a: Analisi, s: Sprint) -> list[str]:
          "| --- | --- | --- | --- | --- | ---: | ---: |"]
     for x in sorted(elenco, key=lambda x: (x.chiusa, x.rif)):
         eff = sum(v.ore for v in x.voci)
-        chi = ", ".join(a.conf.membri[p].nome.split()[0] for p in x.assegnatari) or "—"
+        chi = ", ".join(a.conf.membri[p].nome for p in x.assegnatari) or "—"
         stima = ore_testo(x.ore_stimate) if x.ore_stimate is not None else "—"
         titolo = x.titolo.replace("|", "\\|")
         r.append(f"| {'✅' if x.chiusa else '⏳'} | [{x.rif}]({x.url}) {titolo} | {x.colonna or '—'} "

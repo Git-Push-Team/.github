@@ -76,6 +76,14 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 #    [sprint.ruoli]  chiave = { Ruolo = ore pianificate, ... }
 #        di solito un ruolo per persona; se qualcuno ne fa due, scrivetene
 #        due. Il ruolo con più ore è quello predefinito per /ore.
+#
+#  Distribuzione (rivista l'11 novembre 2026): ognuno ha in totale le ore
+#  per ruolo della Dichiarazione di Impegni (9 Resp, 12 Amm, 13 Ana,
+#  17 Prog, 22 Programm, 19 Ver = 92). Responsabile a rotazione:
+#  cescobolla, biasini, corro, guglielmo, mazzurana, spagnoli, poi di nuovo
+#  cescobolla, biasini, corro, spagnoli. Sprint 4-5 (Natale) leggeri;
+#  sprint 6-7 (sessione d'esami, metà gennaio - inizio febbraio) al massimo
+#  6 ore a testa; le ore tolte alla sessione sono negli sprint 2, 3, 8, 9, 10.
 # ---------------------------------------------------------------------
 
 [[sprint]]
@@ -102,12 +110,12 @@ inizio = 2026-11-16
 fine = 2026-11-29
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Analista = 13 }
-cescobolla = { Verificatore = 12 }
-corro      = { Analista = 6 }
-guglielmo  = { Progettista = 8 }
+biasini    = { Responsabile = 4.5, Verificatore = 3.5 }
+cescobolla = { Progettista = 12 }
+corro      = { Analista = 13 }
+guglielmo  = { Verificatore = 11 }
 mazzurana  = { Amministratore = 12 }
-spagnoli   = { Responsabile = 4.5 }
+spagnoli   = { Analista = 13 }
 
 [[sprint]]
 numero = 3
@@ -115,64 +123,68 @@ inizio = 2026-11-30
 fine = 2026-12-13
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Responsabile = 4.5 }
-cescobolla = { Programmatore = 10 }
-corro      = { Progettista = 9 }
-guglielmo  = { Amministratore = 12 }
-mazzurana  = { Verificatore = 9.5 }
-spagnoli   = { Analista = 13 }
+biasini    = { Analista = 6, Progettista = 7 }
+cescobolla = { Analista = 13 }
+corro      = { Responsabile = 4.5 }
+guglielmo  = { Programmatore = 13.5 }
+mazzurana  = { Verificatore = 13 }
+spagnoli   = { Amministratore = 12 }
 
+# Natale: sprint leggero (come prima)
 [[sprint]]
 numero = 4
 inizio = 2026-12-14
 fine = 2026-12-27
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Progettista = 7 }
-cescobolla = { Verificatore = 7 }
-corro      = { Programmatore = 9 }
-guglielmo  = { Programmatore = 9 }
+biasini    = { Programmatore = 6.5 }
+cescobolla = { Progettista = 5 }
+corro      = { Progettista = 4 }
+guglielmo  = { Responsabile = 9 }
 mazzurana  = { Analista = 7 }
-spagnoli   = { Responsabile = 4.5 }
+spagnoli   = { Programmatore = 5, Verificatore = 7 }
 
+# Natale: sprint leggero (come prima)
 [[sprint]]
 numero = 5
 inizio = 2026-12-28
 fine = 2027-01-10
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Programmatore = 9 }
-cescobolla = { Progettista = 7 }
-corro      = { Analista = 7 }
-guglielmo  = { Responsabile = 4.5 }
-mazzurana  = { Programmatore = 9 }
-spagnoli   = { Verificatore = 7 }
+biasini    = { Analista = 7 }
+cescobolla = { Programmatore = 8.5 }
+corro      = { Programmatore = 10 }
+guglielmo  = { Verificatore = 3 }
+mazzurana  = { Responsabile = 9 }
+spagnoli   = { Progettista = 6 }
 
+# Sessione d'esami: al massimo 6 ore a testa
 [[sprint]]
 numero = 6
 inizio = 2027-01-11
 fine = 2027-01-24
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Verificatore = 9.5 }
-cescobolla = { Amministratore = 12 }
-corro      = { Responsabile = 9 }
-guglielmo  = { Verificatore = 9.5 }
-mazzurana  = { Progettista = 8 }
-spagnoli   = { Programmatore = 10 }
+biasini    = { Programmatore = 6 }
+cescobolla = { Verificatore = 6 }
+corro      = { Amministratore = 6 }
+guglielmo  = { Progettista = 5 }
+mazzurana  = { Verificatore = 6 }
+spagnoli   = { Responsabile = 4.5 }
 
+# Sessione d'esami: al massimo 6 ore a testa
 [[sprint]]
 numero = 7
 inizio = 2027-01-25
 fine = 2027-02-07
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Responsabile = 4.5 }
-cescobolla = { Analista = 13 }
-corro      = { Verificatore = 9.5 }
-guglielmo  = { Progettista = 9 }
-mazzurana  = { Programmatore = 13 }
-spagnoli   = { Amministratore = 12 }
+biasini    = { Verificatore = 5.5 }
+cescobolla = { Responsabile = 4.5 }
+corro      = { Amministratore = 6 }
+guglielmo  = { Programmatore = 5 }
+mazzurana  = { Progettista = 6 }
+spagnoli   = { Programmatore = 5 }
 
 [[sprint]]
 numero = 8
@@ -180,12 +192,12 @@ inizio = 2027-02-08
 fine = 2027-02-21
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Programmatore = 13 }
-cescobolla = { Responsabile = 4.5 }
-corro      = { Progettista = 8 }
-guglielmo  = { Programmatore = 13 }
-mazzurana  = { Verificatore = 9.5 }
-spagnoli   = { Progettista = 9 }
+biasini    = { Responsabile = 4.5, Programmatore = 9.5 }
+cescobolla = { Amministratore = 12 }
+corro      = { Programmatore = 12 }
+guglielmo  = { Progettista = 12 }
+mazzurana  = { Programmatore = 8.5 }
+spagnoli   = { Verificatore = 12 }
 
 [[sprint]]
 numero = 9
@@ -194,11 +206,11 @@ fine = 2027-03-07
 obiettivi = []
 [sprint.ruoli]
 biasini    = { Progettista = 10 }
-cescobolla = { Programmatore = 12 }
-corro      = { Programmatore = 13 }
-guglielmo  = { Responsabile = 4.5 }
-mazzurana  = { Progettista = 9 }
-spagnoli   = { Verificatore = 12 }
+cescobolla = { Programmatore = 13.5 }
+corro      = { Responsabile = 4.5, Verificatore = 9.5 }
+guglielmo  = { Programmatore = 3.5, Verificatore = 5 }
+mazzurana  = { Progettista = 11 }
+spagnoli   = { Programmatore = 12 }
 
 [[sprint]]
 numero = 10
@@ -206,9 +218,9 @@ inizio = 2027-03-08
 fine = 2027-03-21
 obiettivi = []
 [sprint.ruoli]
-biasini    = { Verificatore = 9.5 }
-cescobolla = { Progettista = 10 }
-corro      = { Amministratore = 12 }
-guglielmo  = { Verificatore = 9.5 }
-mazzurana  = { Responsabile = 9 }
-spagnoli   = { Programmatore = 12 }
+biasini    = { Verificatore = 10 }
+cescobolla = { Verificatore = 13 }
+corro      = { Progettista = 13 }
+guglielmo  = { Amministratore = 12 }
+mazzurana  = { Programmatore = 13.5 }
+spagnoli   = { Responsabile = 4.5, Progettista = 3 }
