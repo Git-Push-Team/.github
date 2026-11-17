@@ -220,6 +220,26 @@ class Cruscotto(unittest.TestCase):
             riga = next(r for r in testo.splitlines() if "docs#80" in r and "In Progress" in r)
             self.assertIn("| Luca Cesco Bolla |", riga)
 
+    def test_tabelle_economiche_e_rimanenti(self):
+        """Per ogni sprint iniziato: consuntivo economico per ruolo e ore/budget rimanenti."""
+        with tempfile.TemporaryDirectory() as d:
+            cruscotto.main(["--uscita", d, "--da-file", str(QUI / "esempio-dati.json"),
+                            "--oggi", "2026-11-20"])
+            tab = Path(d) / "tabelle"
+            eco1 = (tab / "consuntivo-economico-sprint-1.tex").read_text(encoding="utf-8")
+            rim1 = (tab / "rimanenti-sprint-1.tex").read_text(encoding="utf-8")
+            rim2 = (tab / "rimanenti-sprint-2.tex").read_text(encoding="utf-8")
+            self.assertIn(r"\label{tab:consuntivo-economico-sprint-1}", eco1)
+            self.assertIn(r"Analista & 2 & $-$18 & 50,00\,\texteuro & $-$450,00\,\texteuro \\", eco1)
+            self.assertIn(r"Programmatore & 1 & $+$1 & 15,00\,\texteuro & $+$15,00\,\texteuro \\", eco1)
+            self.assertIn(r"\textbf{Totale} & \textbf{20,5} & \textbf{$-$39,5}", eco1)
+            self.assertNotIn("parziale", eco1)                    # sprint 1 chiuso il 20 novembre
+            # rimanenti: preventivo totale meno il consumato dall'inizio fino allo sprint
+            self.assertIn(r"Analista & 2 & 76 & 50,00\,\texteuro & 1.900,00\,\texteuro \\", rim1)
+            self.assertIn(r"\textbf{Totale} & \textbf{32,5} & \textbf{519,5}", rim2)
+            self.assertIn("parziale al 2026-11-20", rim2)          # sprint 2 in corso
+            self.assertFalse((tab / "rimanenti-sprint-3.tex").exists())
+
 
 class FintoGitHub:
     """Risponde alle query come farebbe GitHub, con dati inventati."""

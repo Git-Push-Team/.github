@@ -289,6 +289,89 @@ def _tabella_ruoli(a: Analisi, matrice: dict, didascalia: str, etichetta: str,
     return "\n".join(righe) + "\n"
 
 
+def _segno(x: float, testo: str) -> str:
+    """Scarto con il segno: '$+$0,5', '$-$6,25', '0'."""
+    if abs(x) < 0.005:
+        return "0"
+    return ("$+$" if x > 0 else "$-$") + testo
+
+
+def _scarto_ore(x: float) -> str:
+    return _segno(x, ore_testo(abs(x)))
+
+
+def _scarto_euro(x: float) -> str:
+    return _segno(x, _euro_tex(abs(x)) + r"\,\texteuro")
+
+
+def _euro(x: float) -> str:
+    """Anche negativo (budget sforato): '$-$130,00\\,\\texteuro'."""
+    return ("$-$" if x < -0.005 else "") + _euro_tex(abs(x)) + r"\,\texteuro"
+
+
+def _ore_o_meno(x: float) -> str:
+    return ("$-$" if x < -0.005 else "") + ore_testo(abs(x))
+
+
+def _tabella_economica(a: Analisi, s: Sprint, stato: str) -> str:
+    """Per ruolo: ore e costo dello sprint, con lo scarto dal preventivo dello sprint."""
+    eff = a.per_ruolo(a.matrice_effettive(s.numero))
+    pian = a.per_ruolo(a.matrice_pianificate(s))
+    righe = [r"\begin{table}[H]", r"  \centering", r"  \small",
+             rf"  \caption{{{s.nome} -- Consuntivo economico per ruolo{stato}"
+             rf"\label{{tab:consuntivo-economico-sprint-{s.numero}}}}}",
+             r"  \begin{tabular}{@{}lrrrr@{}}", r"    \toprule",
+             r"    \intestazione{Ruolo} & \intestazione{Ore} & \intestazione{Scarto ore} &",
+             r"      \intestazione{Costo} & \intestazione{Scarto costo} \\", r"    \midrule"]
+    for ru in RUOLI:
+        t = a.conf.tariffe.get(ru, 0)
+        if not eff[ru] and not pian[ru]:
+            righe.append(f"    {ru} & -- & -- & -- & -- " + r"\\")
+            continue
+        righe.append(f"    {ru} & {_num(eff[ru])} & {_scarto_ore(eff[ru] - pian[ru])} & "
+                     f"{_euro(eff[ru] * t)} & {_scarto_euro((eff[ru] - pian[ru]) * t)} " + r"\\")
+    te, tp = sum(eff.values()), sum(pian.values())
+    ce = sum(eff[ru] * a.conf.tariffe.get(ru, 0) for ru in RUOLI)
+    cp = sum(pian[ru] * a.conf.tariffe.get(ru, 0) for ru in RUOLI)
+    righe += [r"    \midrule",
+              rf"    \textbf{{Totale}} & \textbf{{{ore_testo(te)}}} & \textbf{{{_scarto_ore(te - tp)}}} & "
+              rf"\textbf{{{_euro(ce)}}} & \textbf{{{_scarto_euro(ce - cp)}}} \\",
+              r"    \bottomrule", r"  \end{tabular}", "", r"  \smallskip",
+              r"  {\footnotesize Scarto = consuntivo $-$ preventivo: un valore positivo",
+              r"   indica più ore o più spesa del previsto.}", r"\end{table}"]
+    return "\n".join(righe) + "\n"
+
+
+def _tabella_rimanenti(a: Analisi, s: Sprint, stato: str) -> str:
+    """Per ruolo: consumato dall'inizio del progetto alla fine dello sprint, e quanto resta
+    del preventivo totale."""
+    consumate = {ru: 0.0 for ru in RUOLI}
+    for altro in a.conf.sprint:
+        if altro.numero <= s.numero:
+            for ru, ore in a.per_ruolo(a.matrice_effettive(altro.numero)).items():
+                consumate[ru] += ore
+    previste = a.per_ruolo(a.matrice_preventivo())
+    righe = [r"\begin{table}[H]", r"  \centering", r"  \small",
+             rf"  \caption{{{s.nome} -- Ore e budget rimanenti per ruolo{stato}"
+             rf"\label{{tab:rimanenti-sprint-{s.numero}}}}}",
+             r"  \begin{tabular}{@{}lrrrr@{}}", r"    \toprule",
+             r"    \intestazione{Ruolo} & \intestazione{Ore consumate} & \intestazione{Ore rimanenti} &",
+             r"      \intestazione{Costo consumato} & \intestazione{Budget rimanente} \\", r"    \midrule"]
+    tot = [0.0, 0.0, 0.0, 0.0]
+    for ru in RUOLI:
+        t = a.conf.tariffe.get(ru, 0)
+        valori = [consumate[ru], previste[ru] - consumate[ru], consumate[ru] * t,
+                  (previste[ru] - consumate[ru]) * t]
+        tot = [x + y for x, y in zip(tot, valori)]
+        righe.append(f"    {ru} & {_ore_o_meno(valori[0])} & {_ore_o_meno(valori[1])} & "
+                     f"{_euro(valori[2])} & {_euro(valori[3])} " + r"\\")
+    righe += [r"    \midrule",
+              rf"    \textbf{{Totale}} & \textbf{{{_ore_o_meno(tot[0])}}} & \textbf{{{_ore_o_meno(tot[1])}}} & "
+              rf"\textbf{{{_euro(tot[2])}}} & \textbf{{{_euro(tot[3])}}} \\",
+              r"    \bottomrule", r"  \end{tabular}", r"\end{table}"]
+    return "\n".join(righe) + "\n"
+
+
 def legenda() -> str:
     return ", ".join(f"{s} = {r}" for r, s in SIGLE.items())
 
@@ -311,6 +394,9 @@ def tabelle_latex(a: Analisi) -> dict[str, str]:
                 f"Consuntivo dello {s.nome} ({s.inizio.isoformat()} -- {s.fine.isoformat()}{stato}): "
                 f"ore effettive per membro e ruolo, tra parentesi lo scarto dal preventivo",
                 f"tab:consuntivo-sprint-{s.numero}", confronto=pian)
+            parziale = "" if s.fine < a.oggi else f" (parziale al {a.oggi.isoformat()})"
+            file[f"consuntivo-economico-sprint-{s.numero}.tex"] = testa + _tabella_economica(a, s, parziale)
+            file[f"rimanenti-sprint-{s.numero}.tex"] = testa + _tabella_rimanenti(a, s, parziale)
 
     prev, eff = a.matrice_preventivo(), a.matrice_effettive()
     file["preventivo-totale.tex"] = testa + _tabella_ruoli(
@@ -350,6 +436,10 @@ def leggimi_tabelle(nomi: list[str]) -> str:
              "**Come usarle**: copiate i file che servono nella cartella del Piano di Progetto "
              "(per esempio `RTB/documenti/esterni/piano-di-progetto/tabelle/`) e includeteli con:", "",
              "```latex", r"\input{tabelle/consuntivo-sprint-1}", "```", "",
+             "Per ogni sprint iniziato ci sono tre tabelle di consuntivo: `consuntivo-sprint-N` "
+             "(ore per membro e ruolo, con lo scarto), `consuntivo-economico-sprint-N` (ore e costi "
+             "per ruolo, con lo scarto dal preventivo dello sprint) e `rimanenti-sprint-N` (ore e "
+             "budget consumati dall'inizio del progetto fino allo sprint N, e quanto resta).", "",
              "Usano `\\nome{...}` e `\\intestazione{...}` della classe `gpt.cls`.", "", "File:", ""]
     righe += [f"- `{n}`" for n in sorted(nomi)]
     return "\n".join(righe) + "\n"
