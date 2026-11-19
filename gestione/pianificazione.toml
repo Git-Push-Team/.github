@@ -108,7 +108,12 @@ spagnoli   = { Progettista = 8 }
 numero = 2
 inizio = 2026-11-16
 fine = 2026-11-29
-obiettivi = []
+obiettivi = [
+   { testo = "Prima stesura piano di qualifica", issue = ["docs#122"] },
+   { testo = "Prima analisi dei requisiti", issue = ["docs#121"] },
+   { testo = "Creazione del diagramma di Gantt", issue = [".github#3"] },
+   
+]
 [sprint.ruoli]
 biasini    = { Responsabile = 4.5, Verificatore = 3.5 }
 cescobolla = { Progettista = 12 }
