@@ -321,6 +321,102 @@ class RiepilogoAZero(unittest.TestCase):
         self.assertEqual(gh.mutazioni("addComment"), [])
 
 
+class TempoDiVerifica(unittest.TestCase):
+    """Metrica MPC-TV: dalla richiesta di revisione alla prima approvazione."""
+
+    @staticmethod
+    def pr(numero, aperta, approvata=None, pronta=None):
+        return {"id": f"PR{numero}", "number": numero, "url": f"u{numero}",
+                "repository": {"nameWithOwner": "Git-Push-Team/docs"}, "comments": {"nodes": []},
+                "createdAt": aperta,
+                "reviews": {"nodes": [{"submittedAt": approvata}] if approvata else []},
+                "timelineItems": {"nodes": [{"createdAt": pronta}] if pronta else []}}
+
+    def grezzi(self, *prs):
+        issue = {"__typename": "Issue", "id": "I1", "number": 1, "title": "T", "url": "u", "state": "CLOSED",
+                 "closedAt": None, "repository": {"nameWithOwner": "Git-Push-Team/docs"},
+                 "assignees": {"nodes": []}, "comments": {"nodes": []},
+                 "closedByPullRequestsReferences": {"nodes": list(prs)}}
+        # la PR 10 compare anche da sola nel Project: deve contare una volta
+        diretta = dict(prs[0], __typename="PullRequest", title="P", state="MERGED", closedAt=None,
+                       assignees={"nodes": []}, closingIssuesReferences={"nodes": []})
+        return {"titolo": "P", "elementi": [{"id": "N1", "fieldValues": {"nodes": []}, "content": issue},
+                                           {"id": "N2", "fieldValues": {"nodes": []}, "content": diretta}]}
+
+    def test_tempo_medio(self):
+        from dati import interpreta_grezzi
+        from metriche import tempo_verifica
+        dati = interpreta_grezzi(self.grezzi(
+            self.pr(10, "2026-11-17T10:00:00Z", "2026-11-18T10:00:00Z"),                  # 24 h
+            self.pr(11, "2026-11-16T08:00:00Z", "2026-11-19T20:00:00Z",
+                    pronta="2026-11-19T08:00:00Z"),                                      # 12 h da pronta
+            self.pr(12, "2026-11-18T08:00:00Z"),                                         # non approvata
+            {"id": "PR13", "number": 13, "url": "u13", "repository": {"nameWithOwner": "Git-Push-Team/docs"},
+             "comments": {"nodes": []}}), CONF)                                           # dati vecchi
+        self.assertEqual(sorted(v.rif for v in dati.verifiche), ["docs#10", "docs#11", "docs#12"])
+        m = tempo_verifica(Analisi(CONF, dati, date(2026, 11, 20)))
+        self.assertEqual(m.codice, "MPC-TV")
+        self.assertTrue(m.valore.startswith("18 h su 2 PR"), m.valore)
+        self.assertIn("sprint 2: 18 h su 2 PR", m.valore)
+        self.assertEqual(m.esito, "ok")
+
+    def test_senza_dati(self):
+        from metriche import tempo_verifica
+        m = tempo_verifica(Analisi(CONF, leggi(CONF, da_file=QUI / "esempio-dati.json"), date(2026, 11, 20)))
+        self.assertEqual(m.valore, "—")
+
+
+class DiagrammiDiGantt(unittest.TestCase):
+    """tabelle/gantt-*.tex: Gantt del progetto e degli sprint (pgfgantt)."""
+
+    def configurazione(self, sostituzioni: dict[str, str]):
+        testo = (QUI / "esempio-pianificazione.toml").read_text(encoding="utf-8")
+        for vecchio, nuovo in sostituzioni.items():
+            self.assertIn(vecchio, testo)
+            testo = testo.replace(vecchio, nuovo, 1)
+        with tempfile.TemporaryDirectory() as d:
+            percorso = Path(d) / "p.toml"
+            percorso.write_text(testo, encoding="utf-8")
+            return carica_configurazione(percorso)
+
+    def test_senza_opzioni(self):
+        from uscite import tabelle_latex
+        file = tabelle_latex(Analisi(CONF, DatiProject("P", [], [], []), date(2026, 11, 20)))
+        progetto = file["gantt-progetto.tex"]
+        self.assertIn(r"\ganttbar{Sprint 1}{2026-11-02}{2026-11-15}", progetto)
+        self.assertIn(r"\ganttmilestone{RTB (18/01/2027)}{2027-01-18}", progetto)
+        self.assertNotIn("ganttgroup", progetto)                 # nessuna fase indicata
+        sprint1 = file["gantt-sprint-1.tex"]
+        self.assertIn(r"\ganttbar{Primo incontro di analisi con Eggon}{2026-11-02}{2026-11-15}", sprint1)
+        self.assertNotIn("ganttmilestone", sprint1)              # nessun incontro settimanale
+
+    def test_fasi_date_e_incontro(self):
+        from uscite import tabelle_latex
+        conf = self.configurazione({
+            "numero = 1\n": 'numero = 1\nfase = "RTB"\n',
+            "numero = 2\n": 'numero = 2\nfase = "RTB"\n',
+            '{ testo = "Primo incontro di analisi con Eggon" }':
+                '{ testo = "Analisi & 100% requisiti", dal = 2026-11-04, al = 2026-11-06 }',
+            "[scadenze]": '[gantt]\nincontro_settimanale = "mercoledi"\nincontro = "Incontro con Eggon"\n\n[scadenze]',
+        })
+        self.assertEqual(conf.incontro, (2, "Incontro con Eggon"))
+        file = tabelle_latex(Analisi(conf, DatiProject("P", [], [], []), date(2026, 11, 20)))
+        self.assertIn(r"\ganttgroup{Fase RTB (sprint 1--2)}{2026-11-02}{2026-11-29}", file["gantt-progetto.tex"])
+        sprint1 = file["gantt-sprint-1.tex"]
+        self.assertIn(r"\ganttbar{Analisi \& 100\% requisiti}{2026-11-04}{2026-11-06}", sprint1)
+        self.assertIn(r"\ganttmilestone{Incontro con Eggon (4/11)}{2026-11-04}", sprint1)
+        self.assertIn(r"\ganttmilestone{Incontro con Eggon (11/11)}{2026-11-11}", sprint1)
+        self.assertTrue(sprint1.rstrip().endswith(r"\end{figure}"))
+        self.assertNotIn("\\\\\n  \\end{ganttchart}", sprint1)      # niente \\ dopo l'ultima riga
+
+    def test_date_fuori_dallo_sprint(self):
+        with self.assertRaises(ErroreConfigurazione):
+            self.configurazione({'{ testo = "Primo incontro di analisi con Eggon" }':
+                                 '{ testo = "X", dal = 2026-11-20 }'})
+        with self.assertRaises(ErroreConfigurazione):
+            self.configurazione({"[scadenze]": '[gantt]\nincontro_settimanale = "giovedi sera"\n\n[scadenze]'})
+
+
 class CollegamentoProject(unittest.TestCase):
     def test_issue_aperta(self):
         gh = FintoGitHub({"issue": {"id": "I1", "number": 5, "title": "T", "projectItems": {"nodes": []}}})

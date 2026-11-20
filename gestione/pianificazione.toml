@@ -65,14 +65,24 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 # Scadenze da mostrare nel cruscotto (conto alla rovescia). Aggiungete
 # l'RTB e la PB appena le fissate, per esempio: RTB = 2027-01-18
 [scadenze]
+"Candidatura RTB" = 2027-01-25
 "Fine progetto" = 2027-03-23
+
+# Diagrammi di Gantt (tabelle/gantt-*.tex): l'incontro che si ripete ogni
+# settimana, mostrato come traguardo nel Gantt di ogni sprint.
+[gantt]
+incontro_settimanale = "mercoledì"
+incontro = "Incontro con Eggon"
 
 # ---------------------------------------------------------------------
 #  SPRINT: uno per blocco [[sprint]], in ordine. Per ognuno:
 #    numero, inizio, fine            (2 settimane, da lunedì a domenica)
+#    fase = "RTB" o "PB"             (raggruppa gli sprint nel Gantt)
 #    obiettivi = [ { testo = "...", issue = ["docs#12", "poc#3"] }, ... ]
 #        le issue sono facoltative: se ci sono, l'obiettivo è raggiunto
-#        quando sono tutte chiuse
+#        quando sono tutte chiuse. Per il Gantt si possono aggiungere
+#        dal = 2026-11-16, al = 2026-11-20 (giorni dentro lo sprint);
+#        senza, la barra copre tutto lo sprint
 #    [sprint.ruoli]  chiave = { Ruolo = ore pianificate, ... }
 #        di solito un ruolo per persona; se qualcuno ne fa due, scrivetene
 #        due. Il ruolo con più ore è quello predefinito per /ore.
@@ -88,6 +98,7 @@ tutti = { Responsabile = 9, Amministratore = 12, Analista = 13, Progettista = 17
 
 [[sprint]]
 numero = 1
+fase = "RTB"
 inizio = 2026-11-02
 fine = 2026-11-15
 obiettivi = [
@@ -106,12 +117,13 @@ spagnoli   = { Progettista = 8 }
 
 [[sprint]]
 numero = 2
+fase = "RTB"
 inizio = 2026-11-16
 fine = 2026-11-29
 obiettivi = [
    { testo = "Prima stesura piano di qualifica", issue = ["docs#122"] },
    { testo = "Prima analisi dei requisiti", issue = ["docs#121"] },
-   { testo = "Creazione del diagramma di Gantt", issue = ["docs#136"] },
+   { testo = "Creazione del diagramma di Gantt", issue = [".github#3"] },
    
 ]
 [sprint.ruoli]
@@ -124,6 +136,7 @@ spagnoli   = { Analista = 13 }
 
 [[sprint]]
 numero = 3
+fase = "RTB"
 inizio = 2026-11-30
 fine = 2026-12-13
 obiettivi = []
@@ -138,6 +151,7 @@ spagnoli   = { Amministratore = 12 }
 # Natale: sprint leggero (come prima)
 [[sprint]]
 numero = 4
+fase = "RTB"
 inizio = 2026-12-14
 fine = 2026-12-27
 obiettivi = []
@@ -152,6 +166,7 @@ spagnoli   = { Programmatore = 5, Verificatore = 7 }
 # Natale: sprint leggero (come prima)
 [[sprint]]
 numero = 5
+fase = "RTB"
 inizio = 2026-12-28
 fine = 2027-01-10
 obiettivi = []
@@ -166,6 +181,7 @@ spagnoli   = { Progettista = 6 }
 # Sessione d'esami: al massimo 6 ore a testa
 [[sprint]]
 numero = 6
+fase = "RTB"
 inizio = 2027-01-11
 fine = 2027-01-24
 obiettivi = []
@@ -180,6 +196,7 @@ spagnoli   = { Responsabile = 4.5 }
 # Sessione d'esami: al massimo 6 ore a testa
 [[sprint]]
 numero = 7
+fase = "PB"
 inizio = 2027-01-25
 fine = 2027-02-07
 obiettivi = []
@@ -193,6 +210,7 @@ spagnoli   = { Programmatore = 5 }
 
 [[sprint]]
 numero = 8
+fase = "PB"
 inizio = 2027-02-08
 fine = 2027-02-21
 obiettivi = []
@@ -206,6 +224,7 @@ spagnoli   = { Verificatore = 12 }
 
 [[sprint]]
 numero = 9
+fase = "PB"
 inizio = 2027-02-22
 fine = 2027-03-07
 obiettivi = []
@@ -219,6 +238,7 @@ spagnoli   = { Programmatore = 12 }
 
 [[sprint]]
 numero = 10
+fase = "PB"
 inizio = 2027-03-08
 fine = 2027-03-21
 obiettivi = []
