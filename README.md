@@ -10,8 +10,8 @@ Questo repository speciale fa tre cose per tutta l'organizzazione:
    - il comando **`/ore`** per registrare le ore nei commenti delle issue;
    - il **collegamento automatico** di issue e PR al GitHub Project;
    - il **cruscotto** notturno: ore per persona e ruolo rispetto al
-     preventivo, sprint, obiettivi, metriche, tabelle LaTeX per il Piano di
-     Progetto e numeri per il diario di bordo.
+     preventivo, sprint, obiettivi, metriche, tabelle e diagrammi di Gantt
+     LaTeX per il Piano di Progetto e numeri per il diario di bordo.
 
 ```text
 .github/
@@ -56,8 +56,8 @@ membri**.
   campo "Ore effettive" è solo un totale comodo da vedere nella bacheca.
   Modificare o cancellare un commento corregge tutto.
 - **La fonte del previsto è `pianificazione.toml`**: preventivo (dalla
-  Dichiarazione di Impegni) e, per ogni sprint, date, obiettivi e ruoli con
-  le ore pianificate di ognuno.
+  Dichiarazione di Impegni) e, per ogni sprint, date, fase, obiettivi e ruoli
+  con le ore pianificate di ognuno.
 
 ---
 
@@ -145,16 +145,18 @@ Nel Project **GIT PUSH TEAM** (⋯ in alto a destra → **Settings**):
 È l'unico file da compilare (lo fa il Responsabile, con una PR):
 
 - **ogni sprint**: un blocco `[[sprint]]` con `numero`, `inizio`, `fine`,
-  `obiettivi` e la tabella `[sprint.ruoli]`, con ruolo e ore pianificate di
-  ognuno:
+  `fase` (`"RTB"` o `"PB"`, usato per raggruppare il diagramma di Gantt del
+  progetto), `obiettivi` e la tabella `[sprint.ruoli]`, con ruolo e ore
+  pianificate di ognuno:
 
   ```toml
   [[sprint]]
   numero = 1
   inizio = 2026-11-02
   fine = 2026-11-15
+  fase = "RTB"
   obiettivi = [
-    { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#70"] },
+    { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#70"], dal = 2026-11-03, al = 2026-11-12 },
     { testo = "Primo incontro di analisi con Eggon" },
   ]
   [sprint.ruoli]
@@ -163,13 +165,19 @@ Nel Project **GIT PUSH TEAM** (⋯ in alto a destra → **Settings**):
   ```
 
   Un obiettivo con `issue` è raggiunto quando sono tutte chiuse; senza
-  `issue` si valuta a mano in retrospettiva. Il ruolo con più ore è quello
-  usato da `/ore` quando non si scrive il ruolo;
-- **le scadenze** (`[scadenze]`), appena decidete la data dell'RTB;
+  `issue` si valuta a mano in retrospettiva. I campi facoltativi `dal` e `al`
+  indicano l'intervallo della barra nel Gantt dello sprint (se mancano, la
+  barra copre l'intero sprint). Il ruolo con più ore è quello usato da `/ore`
+  quando non si scrive il ruolo;
+- **le scadenze** (`[scadenze]`): fissano le milestone di consegna (RTB e PB)
+  anche nel diagramma di Gantt del progetto;
+- **le impostazioni dei Gantt** (`[gantt]`): permettono di configurare la
+  ricorrenza degli incontri settimanali (`incontro_settimanale` / `incontro`)
+  mostrati come milestone nei Gantt di sprint;
 - **il preventivo**, solo se cambia la Dichiarazione di Impegni.
 
-Se il file ha un errore, il workflow **Prove** della PR diventa rosso e dice
-quale riga sistemare.
+Se il file ha un errore (comprese date o intervalli non validi), il workflow
+**Prove** della PR diventa rosso e dice quale riga sistemare.
 
 ### 6. Primo cruscotto
 
@@ -177,7 +185,8 @@ quale riga sistemare.
 minuto:
 
 - in `.github-private` compaiono `README.md`, `profile/README.md`,
-  `tabelle/`, `diario/`, `dati/`;
+  `tabelle/` (inclusi `gantt-progetto.tex` e `gantt-sprint-N.tex` per gli
+  sprint con obiettivi), `diario/`, `dati/`;
 - sulla pagina dell'organizzazione, da membri, si vede il cruscotto (in alto
   a destra c'è il selettore *View as: Member / Public*).
 
@@ -221,21 +230,28 @@ si creano da *Issues → Labels*).
 | --- | --- | --- |
 | Tutti | mentre lavorano | `/ore 2` nei commenti della issue (o `/ore 1 verificatore` nella PR) |
 | Tutti | a ogni riunione | una issue *Riunione*; ogni partecipante scrive `/ore 1,5` |
-| Responsabile | all'inizio dello sprint | aggiunge lo sprint in `pianificazione.toml` (ruoli, ore, obiettivi) |
+| Responsabile | all'inizio dello sprint | aggiunge lo sprint in `pianificazione.toml` (fase, ruoli, ore, obiettivi e date `dal`/`al`) |
 | Responsabile | alla retrospettiva | legge il cruscotto: ore, obiettivi, metriche, *Da sistemare* |
 | Chi prepara il diario di bordo | ogni settimana | copia i numeri da `diario/sprint-N.md` in `.github-private` |
-| Chi aggiorna il Piano di Progetto | a fine sprint | copia le tabelle da `.github-private/tabelle/` (o dall'artefatto del workflow) |
+| Chi aggiorna il Piano di Progetto | a inizio e fine sprint | copia tabelle e diagrammi di Gantt da `.github-private/tabelle/` (o dall'artefatto del workflow) |
 
 Le tabelle LaTeX usano `\nome{...}` e `\intestazione{...}` della classe
 `gpt.cls` e si includono con `\input{tabelle/consuntivo-sprint-1}`.
+I diagrammi di Gantt (`gantt-progetto.tex` e `gantt-sprint-N.tex`, generati
+solo per gli sprint con almeno un obiettivo) richiedono `\usepackage{pgfgantt}`
+nel preambolo del *Piano di Progetto* e si includono con
+`\input{tabelle/gantt-progetto}` e `\input{tabelle/gantt-sprint-1}`.
 
 ## Ampliare le metriche
 
 Le metriche sono in `gestione/metriche.py`: ognuna è una funzione che
-restituisce codice, nome, valore, descrizione ed esito. Per aggiungerne una
-(per esempio quelle del Piano di Qualifica): scrivete la funzione e
-aggiungetela alla lista `METRICHE` in fondo al file. Le soglie attuali sono
-provvisorie.
+restituisce codice, nome, valore, descrizione ed esito. Tra le metriche
+calcolate automaticamente rientra anche **`MPC-TV`** (*Tempo medio di
+verifica di una PR*, media in ore tra richiesta di revisione e prima
+approvazione sulle PR collegate a issue del Project, soglia provvisoria
+`≤ 48 h`). Per aggiungerne una nuova (per esempio quelle del Piano di
+Qualifica): scrivete la funzione e aggiungetela alla lista `METRICHE` in
+fondo al file. Le soglie attuali sono provvisorie.
 
 ## Provare in locale
 
