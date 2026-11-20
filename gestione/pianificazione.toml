@@ -111,7 +111,7 @@ fine = 2026-11-29
 obiettivi = [
    { testo = "Prima stesura piano di qualifica", issue = ["docs#122"] },
    { testo = "Prima analisi dei requisiti", issue = ["docs#121"] },
-   { testo = "Creazione del diagramma di Gantt", issue = [".github#3"] },
+   { testo = "Creazione del diagramma di Gantt", issue = ["docs#136"] },
    
 ]
 [sprint.ruoli]
