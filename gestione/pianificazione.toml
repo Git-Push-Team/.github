@@ -102,10 +102,10 @@ fase = "RTB"
 inizio = 2026-11-02
 fine = 2026-11-15
 obiettivi = [
-  { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#72"] },
-  { testo = "Primo incontro di analisi con Eggon" },
-  { testo = "Definizione cruscotto qualità", issue = ["docs#69"] },
-  { testo = "Studio documentazione", issue = ["docs#68"] },
+  { testo = "Studio documentazione",                 issue = ["docs#68"], dal = 2026-11-02, al = 2026-11-08 },
+  { testo = "Prima stesura delle Norme di Progetto", issue = ["docs#72"], dal = 2026-11-03, al = 2026-11-13 },
+  { testo = "Definizione cruscotto qualità",         issue = ["docs#69"], dal = 2026-11-05, al = 2026-11-12 },
+  { testo = "Primo incontro di analisi con Eggon",                       dal = 2026-11-09, al = 2026-11-11 },
 ]
 [sprint.ruoli]
 biasini    = { Amministratore = 12 }
@@ -121,10 +121,9 @@ fase = "RTB"
 inizio = 2026-11-16
 fine = 2026-11-29
 obiettivi = [
-   { testo = "Prima stesura piano di qualifica", issue = ["docs#122"] },
-   { testo = "Prima analisi dei requisiti", issue = ["docs#121"] },
-   { testo = "Creazione del diagramma di Gantt", issue = [".github#6"] },
-   
+  { testo = "Prima analisi dei requisiti",      issue = ["docs#121"],   dal = 2026-11-16, al = 2026-11-29 },
+  { testo = "Prima stesura piano di qualifica", issue = ["docs#122"],   dal = 2026-11-17, al = 2026-11-27 },
+  { testo = "Creazione del diagramma di Gantt", issue = [".github#6"],  dal = 2026-11-19, al = 2026-11-23 },
 ]
 [sprint.ruoli]
 biasini    = { Responsabile = 4.5, Verificatore = 3.5 }
