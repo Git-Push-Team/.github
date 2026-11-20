@@ -16,6 +16,15 @@ from pathlib import Path
 from comune import COMMENTI, Configurazione, GitHub, ErroreGitHub, normalizza, riferimento, tutti_i_commenti
 from registro_ore import Scarto, Voce, voci_da_commenti
 
+# Per il tempo di verifica (metrica MPC-TV del Piano di Qualifica): quando la
+# PR è stata aperta o segnata come pronta per la revisione, e la prima
+# approvazione.
+VERIFICA_PR = """
+  createdAt
+  reviews(states: APPROVED, first: 1) { nodes { submittedAt } }
+  timelineItems(itemTypes: [READY_FOR_REVIEW_EVENT], last: 1) { nodes { ... on ReadyForReviewEvent { createdAt } } }
+"""
+
 QUERY_ELEMENTI = """
 query($org: String!, $numero: Int!, $dopo: String, $dopo_commenti: String) {
   organization(login: $org) {
@@ -44,13 +53,14 @@ query($org: String!, $numero: Int!, $dopo: String, $dopo_commenti: String) {
               assignees(first: 10) { nodes { login } }
               %s
               closedByPullRequestsReferences(first: 5, includeClosedPrs: true) {
-                nodes { id number url repository { nameWithOwner } %s }
+                nodes { id number url repository { nameWithOwner } %s %s }
               }
             }
             ... on PullRequest {
               id number title url state closedAt
               repository { nameWithOwner }
               assignees(first: 10) { nodes { login } }
+              %s
               %s
               closingIssuesReferences(first: 5) { nodes { number repository { nameWithOwner } } }
             }
@@ -59,7 +69,7 @@ query($org: String!, $numero: Int!, $dopo: String, $dopo_commenti: String) {
       }
     }
   }
-}""" % (COMMENTI, COMMENTI, COMMENTI)
+}""" % (COMMENTI, COMMENTI, VERIFICA_PR, COMMENTI, VERIFICA_PR)
 
 
 @dataclass
@@ -79,11 +89,22 @@ class Attivita:
 
 
 @dataclass
+class Verifica:
+    """Una pull request: quando è stata chiesta la revisione e quando è
+    arrivata la prima approvazione (None se non ancora approvata)."""
+    rif: str                     # "docs#75"
+    url: str
+    richiesta: datetime
+    approvata: datetime | None
+
+
+@dataclass
 class DatiProject:
     titolo: str
     attivita: list[Attivita]
     voci: list[Voce]             # tutte, senza doppioni
     scarti: list[Scarto]
+    verifiche: list[Verifica] = field(default_factory=list)   # una per PR, senza doppioni
 
 
 def _valori_campi(nodo: dict) -> dict[str, dict]:
@@ -93,6 +114,25 @@ def _valori_campi(nodo: dict) -> dict[str, dict]:
         if nome:
             valori[normalizza(nome)] = v
     return valori
+
+
+def _istante(testo: str | None, conf: Configurazione) -> datetime | None:
+    if not testo:
+        return None
+    return datetime.fromisoformat(testo.replace("Z", "+00:00")).astimezone(conf.fuso)
+
+
+def _verifica(pr: dict, rif: str, conf: Configurazione) -> Verifica | None:
+    """I tempi di revisione di una PR; None se i dati non ci sono (per
+    esempio in un file salvato prima che il cruscotto li leggesse)."""
+    aperta = _istante(pr.get("createdAt"), conf)
+    if not aperta:
+        return None
+    pronta = [n.get("createdAt") for n in (pr.get("timelineItems") or {}).get("nodes") or [] if n]
+    approvazioni = [n.get("submittedAt") for n in (pr.get("reviews") or {}).get("nodes") or [] if n]
+    richiesta = _istante(pronta[-1], conf) if pronta and pronta[-1] else aperta
+    approvata = _istante(approvazioni[0], conf) if approvazioni and approvazioni[0] else None
+    return Verifica(rif, pr.get("url", ""), richiesta, approvata)
 
 
 def leggi_grezzi(gh: GitHub, conf: Configurazione) -> dict:
@@ -121,6 +161,12 @@ def leggi_grezzi(gh: GitHub, conf: Configurazione) -> dict:
 def interpreta_grezzi(grezzi: dict, conf: Configurazione) -> DatiProject:
     org = conf.organizzazione
     attivita, tutte_voci, scarti, visti = [], [], [], set()
+    verifiche: dict[str, Verifica] = {}
+
+    def aggiungi_verifica(pr: dict, rif_pr: str) -> None:
+        v = _verifica(pr, rif_pr, conf)
+        if v and rif_pr not in verifiche:
+            verifiche[rif_pr] = v
 
     def aggiungi(voci_nuove: list[Voce], scarti_nuovi: list[Scarto], dove: Attivita) -> None:
         # lo stesso commento può arrivare due volte (dalla PR e dalla issue che
@@ -165,11 +211,14 @@ def interpreta_grezzi(grezzi: dict, conf: Configurazione) -> DatiProject:
         )
         if tipo != "DraftIssue":
             aggiungi(*voci_da_commenti(c["comments"]["nodes"], rif, conf), a)
+            if tipo == "PullRequest":
+                aggiungi_verifica(c, rif)
             for pr in (c.get("closedByPullRequestsReferences") or {}).get("nodes") or []:
                 rif_pr = riferimento(pr["repository"]["nameWithOwner"], pr["number"], org)
                 aggiungi(*voci_da_commenti(pr["comments"]["nodes"], rif_pr, conf), a)
+                aggiungi_verifica(pr, rif_pr)
         attivita.append(a)
-    return DatiProject(grezzi.get("titolo", ""), attivita, tutte_voci, scarti)
+    return DatiProject(grezzi.get("titolo", ""), attivita, tutte_voci, scarti, list(verifiche.values()))
 
 
 def leggi(conf: Configurazione, gh: GitHub | None = None, da_file: Path | None = None,

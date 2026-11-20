@@ -60,6 +60,8 @@ class Membro:
 class Obiettivo:
     testo: str
     issue: list[str] = field(default_factory=list)    # "docs#12", "poc#3"
+    dal: date | None = None                           # per il Gantt: se mancano,
+    al: date | None = None                            # vale tutto lo sprint
 
 
 @dataclass
@@ -69,6 +71,7 @@ class Sprint:
     fine: date
     obiettivi: list[Obiettivo]
     ruoli: dict[str, dict[str, float]]                  # chiave -> {Ruolo: ore}
+    fase: str = ""                                      # "RTB", "PB" (per il Gantt)
 
     @property
     def nome(self) -> str:
@@ -99,6 +102,7 @@ class Configurazione:
     fine_progetto: date | None
     scadenze: dict[str, date]
     sprint: list[Sprint]
+    incontro: tuple[int, str] | None = None             # (giorno 0-6, testo) per il Gantt
 
     def membro_da_github(self, login: str | None) -> Membro | None:
         if not login:
@@ -127,6 +131,22 @@ def _data(valore, dove: str) -> date:
         return date.fromisoformat(str(valore))
     except ValueError:
         raise ErroreConfigurazione(f"{dove}: la data \"{valore}\" non va bene, scrivetela AAAA-MM-GG")
+
+
+GIORNI = ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"]
+
+
+def _incontro(gantt: dict) -> tuple[int, str] | None:
+    """[gantt] incontro_settimanale = "mercoledì" -> (2, testo)."""
+    giorno = str(gantt.get("incontro_settimanale", "")).strip().lower()
+    if not giorno:
+        return None
+    senza_accento = [g.replace("ì", "i") for g in GIORNI]
+    if giorno not in GIORNI and giorno not in senza_accento:
+        raise ErroreConfigurazione(f"[gantt] incontro_settimanale: \"{giorno}\" non è un giorno "
+                                   "della settimana (esempio: \"mercoledì\")")
+    indice = GIORNI.index(giorno) if giorno in GIORNI else senza_accento.index(giorno)
+    return indice, str(gantt.get("incontro", "Incontro settimanale"))
 
 
 def _ore_per_ruolo(tabella: dict, dove: str) -> dict[str, float]:
@@ -186,13 +206,23 @@ def carica_configurazione(percorso: Path | None = None) -> Configurazione:
             if chiave not in membri:
                 raise ErroreConfigurazione(f"{dove}: \"{chiave}\" non è tra i [membri]")
             ruoli[chiave] = _ore_per_ruolo(tabella, f"{dove}, {chiave}")
+        inizio, fine = _data(s["inizio"], dove), _data(s["fine"], dove)
         obiettivi = []
         for o in s.get("obiettivi", []) or []:
             if isinstance(o, str):
                 obiettivi.append(Obiettivo(o))
-            else:
-                obiettivi.append(Obiettivo(str(o.get("testo", "")), [str(x) for x in o.get("issue", [])]))
-        nuovo = Sprint(int(s["numero"]), _data(s["inizio"], dove), _data(s["fine"], dove), obiettivi, ruoli)
+                continue
+            ob = Obiettivo(str(o.get("testo", "")), [str(x) for x in o.get("issue", [])],
+                           _data(o["dal"], f"{dove}, obiettivo \"{o.get('testo', '')}\"") if "dal" in o else None,
+                           _data(o["al"], f"{dove}, obiettivo \"{o.get('testo', '')}\"") if "al" in o else None)
+            for giorno in (ob.dal, ob.al):
+                if giorno and not inizio <= giorno <= fine:
+                    raise ErroreConfigurazione(f"{dove}, obiettivo \"{ob.testo}\": la data {giorno} "
+                                               "è fuori dallo sprint")
+            if ob.dal and ob.al and ob.al < ob.dal:
+                raise ErroreConfigurazione(f"{dove}, obiettivo \"{ob.testo}\": \"al\" è prima di \"dal\"")
+            obiettivi.append(ob)
+        nuovo = Sprint(int(s["numero"]), inizio, fine, obiettivi, ruoli, str(s.get("fase", "")).strip())
         if nuovo.fine < nuovo.inizio:
             raise ErroreConfigurazione(f"{dove}: la fine è prima dell'inizio")
         if sprint and nuovo.inizio <= sprint[-1].fine:
@@ -208,6 +238,7 @@ def carica_configurazione(percorso: Path | None = None) -> Configurazione:
         membri=membri, tariffe=tariffe, preventivo=preventivo, fine_progetto=fine,
         scadenze={k: _data(v, f"[scadenze] {k}") for k, v in dati.get("scadenze", {}).items()},
         sprint=sprint,
+        incontro=_incontro(dati.get("gantt", {}) or {}),
     )
 
 

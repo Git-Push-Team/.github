@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from calcoli import Analisi
 from comune import RUOLI, SIGLE, Sprint, data_breve, data_lunga, euro_testo, ore_testo
@@ -372,6 +372,114 @@ def _tabella_rimanenti(a: Analisi, s: Sprint, stato: str) -> str:
     return "\n".join(righe) + "\n"
 
 
+# --------------------------------------------------------------------------
+#  Diagrammi di Gantt (pacchetto pgfgantt: nel documento serve
+#  \usepackage{pgfgantt})
+# --------------------------------------------------------------------------
+MESI = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio",
+        "agosto", "settembre", "ottobre", "novembre", "dicembre"]
+INIZIALI = ["L", "M", "M", "G", "V", "S", "D"]
+
+
+def _tex(testo: str, massimo: int = 48) -> str:
+    """Testo libero (es. un obiettivo) sicuro dentro LaTeX, accorciato."""
+    testo = " ".join(testo.split())
+    if len(testo) > massimo:
+        testo = testo[:massimo - 1].rstrip() + "…"
+    for c, s in [("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"), ("$", r"\$"),
+                 ("#", r"\#"), ("_", r"\_"), ("{", r"\{"), ("}", r"\}"), ("~", r"\textasciitilde{}"),
+                 ("^", r"\textasciicircum{}")]:
+        testo = testo.replace(c, s)
+    return testo
+
+
+def _titoli_mesi(inizio: date, fine: date) -> str:
+    """Una riga di titoli con i mesi, ciascuno largo quanto i suoi giorni."""
+    pezzi, giorno = [], inizio
+    while giorno <= fine:
+        succ = date(giorno.year + giorno.month // 12, giorno.month % 12 + 1, 1)
+        ultimo = min(fine, succ - timedelta(days=1))
+        giorni = (ultimo - giorno).days + 1
+        nome = MESI[giorno.month - 1] if giorni >= 10 else MESI[giorno.month - 1][:3] + "."
+        pezzi.append(rf"\gantttitle{{{nome} {giorno.year}}}{{{giorni}}}" if giorni >= 20
+                     else rf"\gantttitle{{{nome}}}{{{giorni}}}")
+        giorno = ultimo + timedelta(days=1)
+    return "    " + " ".join(pezzi) + r" \\"
+
+
+def _apri_gantt(inizio: date, fine: date, larghezza_cm: float) -> list[str]:
+    giorni = (fine - inizio).days + 1
+    return [r"\begin{figure}[H]", r"  \centering", r"  \begin{ganttchart}[",
+            "    time slot format=isodate,",
+            f"    x unit={larghezza_cm / giorni:.3f}cm, y unit title=0.5cm, y unit chart=0.5cm,",
+            "    hgrid={*1{gptlinea, dotted}}, vgrid=false,",
+            "    title/.style={fill=gptsfondo, draw=gptlinea},",
+            r"    title label font=\sffamily\scriptsize\bfseries,",
+            "    bar/.style={fill=gptaccento!75, draw=gptaccento},",
+            r"    bar label font=\sffamily\scriptsize, bar height=0.5,",
+            "    group/.style={fill=gptinchiostro, draw=gptinchiostro},",
+            r"    group label font=\sffamily\scriptsize\bfseries, group height=0.25,",
+            "    milestone/.style={fill=gptaccento, draw=gptaccento},",
+            r"    milestone label font=\sffamily\scriptsize\itshape,",
+            f"  ]{{{inizio.isoformat()}}}{{{fine.isoformat()}}}"]
+
+
+def _chiudi_gantt(righe: list[str], didascalia: str, etichetta: str) -> list[str]:
+    if righe and righe[-1].endswith(r" \\"):
+        righe[-1] = righe[-1][:-3]
+    return righe + [r"  \end{ganttchart}", rf"  \caption{{{didascalia}\label{{{etichetta}}}}}",
+                    r"\end{figure}"]
+
+
+def _gantt_progetto(a: Analisi) -> str:
+    """Tutto il progetto: una barra per sprint, raggruppate per fase, e le
+    scadenze di pianificazione.toml come traguardi."""
+    sprint = a.conf.sprint
+    inizio = sprint[0].inizio
+    fine = max([sprint[-1].fine] + [d for d in a.conf.scadenze.values()])
+    righe = _apri_gantt(inizio, fine, 11.0) + [_titoli_mesi(inizio, fine)]
+    i = 0
+    while i < len(sprint):
+        fase = sprint[i].fase
+        j = i
+        while j + 1 < len(sprint) and sprint[j + 1].fase == fase:
+            j += 1
+        if fase:
+            righe.append(rf"    \ganttgroup{{Fase {_tex(fase)} (sprint {sprint[i].numero}--{sprint[j].numero})}}"
+                         rf"{{{sprint[i].inizio.isoformat()}}}{{{sprint[j].fine.isoformat()}}} \\")
+        for s in sprint[i:j + 1]:
+            righe.append(rf"    \ganttbar{{{s.nome}}}{{{s.inizio.isoformat()}}}{{{s.fine.isoformat()}}} \\")
+        i = j + 1
+    for nome, giorno in sorted(a.conf.scadenze.items(), key=lambda x: x[1]):
+        if inizio <= giorno <= fine:
+            righe.append(rf"    \ganttmilestone{{{_tex(nome)} ({giorno.strftime('%d/%m/%Y')})}}"
+                         rf"{{{giorno.isoformat()}}} \\")
+    return "\n".join(_chiudi_gantt(righe, "Diagramma di Gantt del progetto: sprint e scadenze",
+                                    "fig:gantt-progetto")) + "\n"
+
+
+def _gantt_sprint(a: Analisi, s: Sprint) -> str:
+    """Uno sprint: una barra per obiettivo (dal/al, o tutto lo sprint),
+    l'incontro settimanale e le scadenze che cadono nello sprint."""
+    righe = _apri_gantt(s.inizio, s.fine, 9.5) + [_titoli_mesi(s.inizio, s.fine)]
+    giorni = [s.inizio + timedelta(days=k) for k in range((s.fine - s.inizio).days + 1)]
+    righe.append("    " + " ".join(rf"\gantttitle{{{INIZIALI[g.weekday()]} {g.day}}}{{1}}" for g in giorni)
+                 + r" \\")
+    for o in s.obiettivi:
+        righe.append(rf"    \ganttbar{{{_tex(o.testo)}}}{{{(o.dal or s.inizio).isoformat()}}}"
+                     rf"{{{(o.al or s.fine).isoformat()}}} \\")
+    traguardi = []
+    if a.conf.incontro:
+        giorno_sett, testo = a.conf.incontro
+        traguardi += [(g, testo) for g in giorni if g.weekday() == giorno_sett]
+    traguardi += [(g, nome) for nome, g in a.conf.scadenze.items() if s.contiene(g)]
+    for g, testo in sorted(traguardi):
+        righe.append(rf"    \ganttmilestone{{{_tex(testo)} ({g.day}/{g.month})}}{{{g.isoformat()}}} \\")
+    return "\n".join(_chiudi_gantt(
+        righe, f"{s.nome} ({s.inizio.isoformat()} -- {s.fine.isoformat()}): pianificazione degli obiettivi",
+        f"fig:gantt-sprint-{s.numero}")) + "\n"
+
+
 def legenda() -> str:
     return ", ".join(f"{s} = {r}" for r, s in SIGLE.items())
 
@@ -397,6 +505,12 @@ def tabelle_latex(a: Analisi) -> dict[str, str]:
             parziale = "" if s.fine < a.oggi else f" (parziale al {a.oggi.isoformat()})"
             file[f"consuntivo-economico-sprint-{s.numero}.tex"] = testa + _tabella_economica(a, s, parziale)
             file[f"rimanenti-sprint-{s.numero}.tex"] = testa + _tabella_rimanenti(a, s, parziale)
+
+    for s in a.conf.sprint:
+        if s.obiettivi:
+            file[f"gantt-sprint-{s.numero}.tex"] = testa + _gantt_sprint(a, s)
+    if a.conf.sprint:
+        file["gantt-progetto.tex"] = testa + _gantt_progetto(a)
 
     prev, eff = a.matrice_preventivo(), a.matrice_effettive()
     file["preventivo-totale.tex"] = testa + _tabella_ruoli(
@@ -440,7 +554,13 @@ def leggimi_tabelle(nomi: list[str]) -> str:
              "(ore per membro e ruolo, con lo scarto), `consuntivo-economico-sprint-N` (ore e costi "
              "per ruolo, con lo scarto dal preventivo dello sprint) e `rimanenti-sprint-N` (ore e "
              "budget consumati dall'inizio del progetto fino allo sprint N, e quanto resta).", "",
-             "Usano `\\nome{...}` e `\\intestazione{...}` della classe `gpt.cls`.", "", "File:", ""]
+             "Usano `\\nome{...}` e `\\intestazione{...}` della classe `gpt.cls`.", "",
+             "**Diagrammi di Gantt**: `gantt-progetto` (sprint e scadenze di tutto il progetto) e "
+             "`gantt-sprint-N` (gli obiettivi dello sprint, con le date `dal`/`al` se indicate in "
+             "`pianificazione.toml`, e l'incontro settimanale). Nel documento serve "
+             "`\\usepackage{pgfgantt}`. Copiateli a inizio sprint, insieme al preventivo: "
+             "sono la pianificazione, e così restano fermi anche se il file cambia dopo.", "",
+             "File:", ""]
     righe += [f"- `{n}`" for n in sorted(nomi)]
     return "\n".join(righe) + "\n"
 

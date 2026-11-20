@@ -106,7 +106,32 @@ def scostamento_sprint(a: Analisi) -> Metrica:
                    "ok" if abs(valore) <= 15 else "attenzione")
 
 
-METRICHE = [scostamento_sprint, consumo_budget, scostamento_stime, obiettivi_raggiunti, ore_fuori_piano]
+def tempo_verifica(a: Analisi) -> Metrica:
+    """MPC-TV del Piano di Qualifica: ore medie tra la richiesta di revisione
+    di una PR (apertura, o passaggio da bozza a pronta) e la prima
+    approvazione. Contano le PR collegate a una issue del Project."""
+    descrizione = ("media delle ore tra la richiesta di revisione di una PR e la prima approvazione, "
+                   "sulle PR collegate a issue del Project")
+    approvate = [v for v in a.dati.verifiche if v.approvata]
+    if not approvate:
+        return Metrica("MPC-TV", "Tempo medio di verifica di una PR", "—", descrizione)
+
+    def media(elenco) -> float:
+        return sum(max((v.approvata - v.richiesta).total_seconds(), 0) for v in elenco) / len(elenco) / 3600
+
+    totale = media(approvate)
+    valore = f"{totale:.0f} h su {len(approvate)} PR"
+    sprint = a.sprint_corrente or a.ultimo_concluso
+    if sprint:
+        dello_sprint = [v for v in approvate if sprint.inizio <= v.approvata.date() <= sprint.fine]
+        if dello_sprint:
+            valore += f" (sprint {sprint.numero}: {media(dello_sprint):.0f} h su {len(dello_sprint)} PR)"
+    return Metrica("MPC-TV", "Tempo medio di verifica di una PR", valore, descrizione,
+                   "ok" if totale <= 48 else "attenzione")
+
+
+METRICHE = [scostamento_sprint, consumo_budget, scostamento_stime, obiettivi_raggiunti, ore_fuori_piano,
+            tempo_verifica]
 
 
 def calcola(a: Analisi) -> list[Metrica]:
